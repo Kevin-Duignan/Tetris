@@ -5,25 +5,30 @@
 int constexpr GAP = 7, ROW_COUNT = 12, COL_COUNT = 20, CELL_SIZE = 50;
 
 void drawCells(sf::RenderWindow &window) {
-  float length = 100, gap = 10;
-  sf::RectangleShape squareCell(sf::Vector2f(10.f, 10.f));
-  squareCell.setFillColor(sf::Color(180, 50, 20));
-  squareCell.setSize(sf::Vector2f(length, length));
+  // Set size dynamically to ensure all cells are drawn
+  window.setSize(sf::Vector2u((CELL_SIZE + GAP + 1) * ROW_COUNT,
+                              (CELL_SIZE + GAP + 1) * COL_COUNT));
 
-  float x = 10, y = 10;
-  for (int i = 0; i < 9; i++) {
-    for (int j = 0; j < 7; j++) {
-      squareCell.setPosition(x, y);
-      window.draw(squareCell);
-      x += length + gap;
+  sf::RectangleShape cell(sf::Vector2f(CELL_SIZE, CELL_SIZE));
+  cell.setFillColor(sf::Color(180, 50, 20));
+
+  float x = GAP, y = GAP;
+  for (int i = 0; i < COL_COUNT; i++) {
+    for (int j = 0; j < ROW_COUNT; j++) {
+      cell.setPosition(x, y);
+      window.draw(cell);
+      x += CELL_SIZE + GAP;
     }
-    y += length + gap;
-    x = gap;
+    y += CELL_SIZE + GAP;
+    x = GAP;
   }
 }
 
 int main() {
-  auto window = sf::RenderWindow({670u, 1000u}, "CMake SFML Project");
+  auto window =
+      sf::RenderWindow(sf::VideoMode((CELL_SIZE + GAP + 1) * ROW_COUNT - GAP,
+                                     (CELL_SIZE + GAP + 1) * COL_COUNT - GAP),
+                       "CMake SFML Project");
   window.setFramerateLimit(144);
 
   while (window.isOpen()) {
