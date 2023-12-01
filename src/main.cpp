@@ -50,8 +50,8 @@ int main() {
   }
 
   auto window =
-      sf::RenderWindow(sf::VideoMode((CELL_SIZE + GAP + 1) * ROWS - GAP,
-                                     (CELL_SIZE + GAP + 1) * COLUMNS - GAP),
+      sf::RenderWindow(sf::VideoMode((CELL_SIZE + GAP) * ROWS + GAP,
+                                     (CELL_SIZE + GAP) * COLUMNS + GAP),
                        "CMake SFML Project");
   window.setFramerateLimit(144);
 
