@@ -28,6 +28,7 @@ void drawCells(sf::RenderWindow &window, matrixType matrix) {
         block.setPosition(x, y);
         window.draw(block);
       }
+      x += CELL_SIZE + GAP;
     }
     y += CELL_SIZE + GAP;
     x = GAP;
