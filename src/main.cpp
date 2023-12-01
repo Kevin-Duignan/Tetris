@@ -2,19 +2,16 @@
 #include <algorithm>
 #include <iostream>
 
-int constexpr GAP = 7, ROW_COUNT = 12, COL_COUNT = 20, CELL_SIZE = 50;
+int constexpr GAP = 4, ROWS = 12, COLUMNS = 20, CELL_SIZE = 25;
 
 void drawCells(sf::RenderWindow &window) {
-  // Set size dynamically to ensure all cells are drawn
-  window.setSize(sf::Vector2u((CELL_SIZE + GAP + 1) * ROW_COUNT,
-                              (CELL_SIZE + GAP + 1) * COL_COUNT));
 
   sf::RectangleShape cell(sf::Vector2f(CELL_SIZE, CELL_SIZE));
   cell.setFillColor(sf::Color(180, 50, 20));
 
   float x = GAP, y = GAP;
-  for (int i = 0; i < COL_COUNT; i++) {
-    for (int j = 0; j < ROW_COUNT; j++) {
+  for (int i = 0; i < COLUMNS; i++) {
+    for (int j = 0; j < ROWS; j++) {
       cell.setPosition(x, y);
       window.draw(cell);
       x += CELL_SIZE + GAP;
@@ -26,8 +23,8 @@ void drawCells(sf::RenderWindow &window) {
 
 int main() {
   auto window =
-      sf::RenderWindow(sf::VideoMode((CELL_SIZE + GAP + 1) * ROW_COUNT - GAP,
-                                     (CELL_SIZE + GAP + 1) * COL_COUNT - GAP),
+      sf::RenderWindow(sf::VideoMode((CELL_SIZE + GAP + 1) * ROWS - GAP,
+                                     (CELL_SIZE + GAP + 1) * COLUMNS - GAP),
                        "CMake SFML Project");
   window.setFramerateLimit(144);
 
