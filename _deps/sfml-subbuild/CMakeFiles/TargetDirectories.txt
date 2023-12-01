@@ -1,0 +1,3 @@
+/Users/ahnafmasud/Documents/GitHub/Tetris/_deps/sfml-subbuild/CMakeFiles/sfml-populate.dir
+/Users/ahnafmasud/Documents/GitHub/Tetris/_deps/sfml-subbuild/CMakeFiles/edit_cache.dir
+/Users/ahnafmasud/Documents/GitHub/Tetris/_deps/sfml-subbuild/CMakeFiles/rebuild_cache.dir

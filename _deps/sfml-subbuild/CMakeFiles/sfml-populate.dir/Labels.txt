@@ -1,0 +1,14 @@
+# Target labels
+ sfml-populate
+# Source files and their labels
+/Users/ahnafmasud/Documents/GitHub/Tetris/_deps/sfml-subbuild/CMakeFiles/sfml-populate
+/Users/ahnafmasud/Documents/GitHub/Tetris/_deps/sfml-subbuild/CMakeFiles/sfml-populate.rule
+/Users/ahnafmasud/Documents/GitHub/Tetris/_deps/sfml-subbuild/CMakeFiles/sfml-populate-complete.rule
+/Users/ahnafmasud/Documents/GitHub/Tetris/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-build.rule
+/Users/ahnafmasud/Documents/GitHub/Tetris/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-configure.rule
+/Users/ahnafmasud/Documents/GitHub/Tetris/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-download.rule
+/Users/ahnafmasud/Documents/GitHub/Tetris/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-install.rule
+/Users/ahnafmasud/Documents/GitHub/Tetris/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-mkdir.rule
+/Users/ahnafmasud/Documents/GitHub/Tetris/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-patch.rule
+/Users/ahnafmasud/Documents/GitHub/Tetris/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-test.rule
+/Users/ahnafmasud/Documents/GitHub/Tetris/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-update.rule
