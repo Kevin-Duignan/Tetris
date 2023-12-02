@@ -12,7 +12,7 @@ typedef std::vector<coords>
     pieceType; // NOT PERMANENT. TO be replaced with piece struct.
 
 // Enums
-enum blockType {
+enum cellType {
   empty,
   active,
   sealed
