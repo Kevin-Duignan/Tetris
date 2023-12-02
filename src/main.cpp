@@ -3,13 +3,13 @@
 #include <array>
 #include <iostream>
 
-int constexpr GAP = 4, ROWS = 12, COLUMNS = 20, CELL_SIZE = 25;
+int constexpr GAP = 4, ROWS = 20, COLUMNS = 12, CELL_SIZE = 25;
 
 // Types
 typedef std::array<std::array<int, COLUMNS>, ROWS> matrixType;
 typedef std::tuple<int, int> coords; // (x, y)
-typedef std::vector<coords>
-    pieceType; // NOT PERMANENT. TO be replaced with piece struct.
+// NOT PERMANENT. TO be replaced with piece struct.
+typedef std::vector<coords> pieceType;
 
 // Enums
 enum cellType {
@@ -23,9 +23,6 @@ enum cellType {
 pieceType movePiece(matrixType &matrix, pieceType piece, char direction);
 
 void drawCells(sf::RenderWindow &window, matrixType matrix) {
-  // Set size dynamically to ensure all cells are drawn
-  window.setSize(sf::Vector2u((CELL_SIZE + GAP + 1) * ROWS,
-                              (CELL_SIZE + GAP + 1) * COLUMNS));
 
   sf::RectangleShape cell(sf::Vector2f(CELL_SIZE, CELL_SIZE));
   cell.setFillColor(sf::Color(180, 50, 20));
@@ -34,8 +31,8 @@ void drawCells(sf::RenderWindow &window, matrixType matrix) {
   block.setFillColor(sf::Color(255, 0, 0));
 
   float x = GAP, y = GAP;
-  for (int i = 0; i < COLUMNS; i++) {
-    for (int j = 0; j < ROWS; j++) {
+  for (int i = 0; i < ROWS; i++) {
+    for (int j = 0; j < COLUMNS; j++) {
       if (matrix[j][i] == empty) {
         cell.setPosition(x, y);
         window.draw(cell);
@@ -64,8 +61,8 @@ int main() {
   }
 
   auto window =
-      sf::RenderWindow(sf::VideoMode((CELL_SIZE + GAP) * ROWS + GAP,
-                                     (CELL_SIZE + GAP) * COLUMNS + GAP),
+      sf::RenderWindow(sf::VideoMode((CELL_SIZE + GAP) * COLUMNS + GAP,
+                                     (CELL_SIZE + GAP) * ROWS + GAP),
                        "CMake SFML Project");
   window.setFramerateLimit(144);
 
