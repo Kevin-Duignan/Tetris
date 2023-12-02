@@ -1,21 +1,19 @@
 #include <SFML/Graphics.hpp>
+#include <vector>
 
-int main()
-{
-    auto window = sf::RenderWindow{ { 1920u, 1080u }, "CMake SFML Project" };
-    window.setFramerateLimit(144);
+struct Tetromino {
+    sf::Color color;
+    std::vector<sf::Vector2i> blocks;
 
-    while (window.isOpen())
-    {
-        for (auto event = sf::Event{}; window.pollEvent(event);)
-        {
-            if (event.type == sf::Event::Closed)
-            {
-                window.close();
-            }
+    Tetromino(sf::Color c, std::vector<sf::Vector2i> b) : color(c), blocks(b) {}
+
+    void draw(sf::RenderWindow& window, int cellSize) const {
+        sf::RectangleShape blockShape(sf::Vector2f(cellSize, cellSize));
+        blockShape.setFillColor(color);
+
+        for (const auto& block : blocks) {
+            blockShape.setPosition(block.x * cellSize, block.y * cellSize);
+            window.draw(blockShape);
         }
-
-        window.clear();
-        window.display();
     }
-}
+};
