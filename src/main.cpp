@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <array>
 #include <iostream>
+using namespace std::literals;
 
 int constexpr GAP = 4, ROWS = 20, COLUMNS = 12, CELL_SIZE = 25;
 
@@ -21,6 +22,7 @@ enum class cellType : short {
 
 // Prototypes
 pieceType movePiece(matrixType &matrix, pieceType piece, char direction);
+void printGrid(matrixType matrix); // debugging only
 
 void drawCells(sf::RenderWindow &window, matrixType matrix) {
 
@@ -33,7 +35,7 @@ void drawCells(sf::RenderWindow &window, matrixType matrix) {
   float x = GAP, y = GAP;
   for (int i = 0; i < ROWS; i++) {
     for (int j = 0; j < COLUMNS; j++) {
-      if (matrix[j][i] == std::to_underlying(cellType::empty)) {
+      if (matrix[i][j] == std::to_underlying(cellType::empty)) {
         cell.setPosition(x, y);
         window.draw(cell);
       } else { // there is a block in that spot
@@ -53,13 +55,6 @@ int main() {
     std::fill(row.begin(), row.end(), 0);
   }
 
-  for (const auto &row : matrix) { // Debugging only!
-    for (const auto &cell : row) {
-      std::cout << cell << ' ';
-    }
-    std::cout << '\n';
-  }
-
   auto window =
       sf::RenderWindow(sf::VideoMode((CELL_SIZE + GAP) * COLUMNS + GAP,
                                      (CELL_SIZE + GAP) * ROWS + GAP),
@@ -67,11 +62,11 @@ int main() {
   window.setFramerateLimit(144);
 
   sf::Clock clock;                      // starts the clock
-  sf::Time gameTick = sf::seconds(0.2); // game tick every 1 second
+  sf::Time gameTick = sf::seconds(0.5); // game tick every 1 second
 
   pieceType startPiece = {
-      std::make_tuple(0, 0),
-      std::make_tuple(1, 0)}; // Temp implementation, don't keep!
+      std::make_tuple(0, 0), std::make_tuple(1, 0),
+      std::make_tuple(1, 1)}; // Temp implementation, don't keep!
 
   while (window.isOpen()) {
     for (auto event = sf::Event{}; window.pollEvent(event);) {
@@ -86,7 +81,7 @@ int main() {
 
     // remove the old piece that is active
     for (coords c : startPiece) {
-      matrix[std::get<0>(c)][std::get<1>(c)] =
+      matrix[std::get<1>(c)][std::get<0>(c)] =
           std::to_underlying(cellType::empty);
     }
 
@@ -98,13 +93,32 @@ int main() {
 
     // replace the moved (or not) active piece.
     for (coords c : startPiece) {
-      matrix[std::get<0>(c)][std::get<1>(c)] =
+      matrix[std::get<1>(c)][std::get<0>(c)] =
           std::to_underlying(cellType::active);
     }
+    // coords first = startPiece[0];
 
-    // if move button clicked, try that move
+    // std::cout << matrix[std::get<1>(first)][std::get<0>(first)]
+    //<< '\n'; // must be 1, 0 format!
+    /*
+    printGrid(matrix);
+    for (coords c : startPiece) {
+      matrix[std::get<1>(c)][std::get<0>(c)] =
+          std::to_underlying(cellType::empty);
+    }
+    for (coords &c : startPiece) {
+      std::get<1>(c)++; // Move each block down
+    }
+    for (coords c : startPiece) {
+      matrix[std::get<1>(c)][std::get<0>(c)] =
+          std::to_underlying(cellType::active);
+    }
+    printGrid(matrix);*/
   }
+
+  // if move button clicked, try that move
 }
+
 pieceType movePiece(matrixType &matrix, pieceType piece, char direction) {
 
   // Function to check if the new position is valid
@@ -156,4 +170,19 @@ pieceType movePiece(matrixType &matrix, pieceType piece, char direction) {
   }
 
   return piece; // Return the updated piece
+}
+void printGrid(matrixType matrix) {
+  constexpr auto guide =
+      "a b c d e f g h i j k l m n o p q r s t u v w x y z"sv;
+  std::cout << "  " << guide.substr(0, matrix[0].size() * 2) << "\n";
+  for (auto i{0UL}; const auto &row : matrix) { // Debugging only!
+    std::cout << guide[i] << ' ';
+    for (const auto &cell : row) {
+      std::cout << cell << ' ';
+    }
+    std::cout << '\n';
+    i += 2;
+  }
+  std::cout << '\n';
+  std::cout << '\n';
 }
