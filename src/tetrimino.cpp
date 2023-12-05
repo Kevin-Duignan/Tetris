@@ -2,6 +2,7 @@
 #include <array>
 #include <bitset>
 #include <memory>
+#include <tuple>
 
 template <std::uint8_t Orientations> struct Tetrimino {
   using piece_type = std::array<std::bitset<12>, Orientations>;
@@ -15,7 +16,7 @@ template <std::uint8_t Orientations> struct Tetrimino {
   constexpr explicit Tetrimino(piece_tag_t tag, std::uint8_t default_orientaion,
                                piece_type orientations)
       : piece_tag(tag), piece_orientation(default_orientaion),
-        piece_mask(orientations) {}
+        piece_mask(orientations), coords(std::make_tuple(0, 0)) {}
 
   auto rotate() -> void {
     piece_orientation = (piece_orientation + 1) % Orientations;
@@ -29,6 +30,7 @@ template <std::uint8_t Orientations> struct Tetrimino {
   piece_tag_t piece_tag;
   std::uint8_t piece_orientation = 0;
   piece_type piece_mask;
+  std::tuple<std::uint8_t, std::uint8_t> coords;
 };
 
 // piece_mask[piece_orientation]
