@@ -39,6 +39,8 @@ void drawCells(sf::RenderWindow &window, matrixType matrix) {
 }
 
 int main() {
+
+  std::cout << __cplusplus << '\n';
   matrixType matrix;
   for (auto &row : matrix) {
     std::fill(row.begin(), row.end(), 0);
