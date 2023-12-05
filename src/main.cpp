@@ -1,23 +1,14 @@
+#include "const.h"
 #include <SFML/Graphics.hpp>
 #include <algorithm>
 #include <array>
 #include <iostream>
-
-int constexpr GAP = 4, ROWS = 20, COLUMNS = 12, CELL_SIZE = 25;
 
 // Types
 using matrixType = std::array<std::array<int, COLUMNS>, ROWS>;
 using coords = std::tuple<int, int>; // (x, y)
 // NOT PERMANENT. TO be replaced with piece struct.
 using pieceType = std::vector<coords>;
-
-// Enums
-enum class cellType : short {
-  empty,
-  active,
-  sealed
-}; // empty means there is no block, acive means there is a block that can move,
-   // sealed means there is a block that can't move.
 
 // Prototypes
 pieceType movePiece(matrixType &matrix, pieceType piece, char direction);
