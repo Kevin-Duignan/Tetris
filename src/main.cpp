@@ -6,13 +6,13 @@
 int constexpr GAP = 4, ROWS = 20, COLUMNS = 12, CELL_SIZE = 25;
 
 // Types
-typedef std::array<std::array<int, COLUMNS>, ROWS> matrixType;
-typedef std::tuple<int, int> coords; // (x, y)
+using matrixType = std::array<std::array<int, COLUMNS>, ROWS>;
+using coords = std::tuple<int, int>; // (x, y)
 // NOT PERMANENT. TO be replaced with piece struct.
-typedef std::vector<coords> pieceType;
+using pieceType = std::vector<coords>;
 
 // Enums
-enum cellType {
+enum class cellType : short {
   empty,
   active,
   sealed
@@ -28,12 +28,12 @@ void drawCells(sf::RenderWindow &window, matrixType matrix) {
   cell.setFillColor(sf::Color(180, 50, 20));
 
   sf::RectangleShape block(sf::Vector2f(CELL_SIZE, CELL_SIZE));
-  block.setFillColor(sf::Color(255, 0, 0));
+  block.setFillColor(sf::Color(0, 255, 0));
 
   float x = GAP, y = GAP;
   for (int i = 0; i < ROWS; i++) {
     for (int j = 0; j < COLUMNS; j++) {
-      if (matrix[j][i] == empty) {
+      if (matrix[j][i] == std::to_underlying(cellType::empty)) {
         cell.setPosition(x, y);
         window.draw(cell);
       } else { // there is a block in that spot
@@ -86,7 +86,8 @@ int main() {
 
     // remove the old piece that is active
     for (coords c : startPiece) {
-      matrix[std::get<0>(c)][std::get<1>(c)] = empty;
+      matrix[std::get<0>(c)][std::get<1>(c)] =
+          std::to_underlying(cellType::empty);
     }
 
     if (clock.getElapsedTime() > gameTick) { // game tick
@@ -97,7 +98,8 @@ int main() {
 
     // replace the moved (or not) active piece.
     for (coords c : startPiece) {
-      matrix[std::get<0>(c)][std::get<1>(c)] = active;
+      matrix[std::get<0>(c)][std::get<1>(c)] =
+          std::to_underlying(cellType::active);
     }
 
     // if move button clicked, try that move
@@ -108,7 +110,7 @@ pieceType movePiece(matrixType &matrix, pieceType piece, char direction) {
   // Function to check if the new position is valid
   auto isValidPosition = [&](int x, int y) { // lambda!
     return (x >= 0 && x < COLUMNS && y >= 0 && y < ROWS &&
-            matrix[y][x] != sealed);
+            matrix[y][x] != std::to_underlying(cellType::active));
   };
 
   // Move piece left
