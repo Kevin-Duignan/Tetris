@@ -23,7 +23,7 @@ template <std::uint8_t Orientations> struct Tetrimino {
   }
 
   constexpr auto operator()(const std::uint8_t &x, const std::uint8_t &y) const
-      -> std::bitset<12>::const_reference {
+      -> bool {
     return piece_mask.at(piece_orientation)[(std::uint8_t(4) * y) + x];
   }
 
