@@ -32,11 +32,6 @@ template <std::uint8_t Orientations> struct Tetromino : public BaseTetromino {
     current_orientation = (current_orientation + 1) % Orientations;
   }
 
-  constexpr auto operator()(const std::uint8_t &x, const std::uint8_t &y) const
-      -> std::bitset<12>::const_reference {
-    return piece_mask.at(current_orientation)[(std::uint8_t(4) * y) + x];
-  }
-
   auto getBlockCoords() {
     std::vector<std::tuple<std::uint8_t, std::uint8_t>> blockCoords;
 
@@ -56,7 +51,9 @@ template <std::uint8_t Orientations> struct Tetromino : public BaseTetromino {
   constexpr auto get_orientations() { return Orientations; }
 
   constexpr auto operator()(const std::uint8_t &x, const std::uint8_t &y) const
-      -> std::bitset<12>::const_reference;
+      -> std::bitset<12>::const_reference {
+    return piece_mask.at(current_orientation)[(std::uint8_t(4) * y) + x];
+  }
 
   piece_type piece_mask;
 };
