@@ -1,25 +1,15 @@
-#include "tetromino.h"
+#include "../headers/const.h"
+#include "../headers/move.h"
+#include "../headers/tetromino.h"
+
 #include <SFML/Graphics.hpp>
-#include <algorithm>
-#include <array>
 #include <iostream>
 
 using namespace std::literals;
 
-constexpr int GAP = 4, ROWS = 20, COLUMNS = 12, CELL_SIZE = 25;
 using namespace std::literals;
-// Types
-using matrixType = std::array<std::array<int, COLUMNS>, ROWS>;
-using coords = std::tuple<std::uint8_t, std::uint8_t>; // (x, y)
-// NOT PERMANENT. TO be replaced with piece struct.
-using pieceType = std::vector<coords>;
 
 enum class cellType : short { empty, active, sealed };
-
-// Prototypes
-pieceType movePiece(matrixType &matrix, pieceType piece, char direction);
-void printGrid(matrixType matrix); // debugging only
-bool shouldSeal(matrixType matrix, pieceType piece);
 
 void drawCells(sf::RenderWindow &window, matrixType matrix) {
 
@@ -65,7 +55,7 @@ int main() {
 
   sf::Clock keyClock;                  // starts the clock
   sf::Time keyTick = sf::seconds(0.1); // game tick every 1 second
-  pieceType startPiece = getBlockCoords(i_piece);
+  pieceType startPiece = i_piece.getBlockCoords();
 
   while (window.isOpen()) {
     for (auto event = sf::Event{}; window.pollEvent(event);) {
@@ -89,7 +79,7 @@ int main() {
           matrix[std::get<1>(c)][std::get<0>(c)] =
               std::to_underlying(cellType::sealed);
         }
-        startPiece = getBlockCoords(i_piece);
+        startPiece = i_piece.getBlockCoords();
         continue;
       } else {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) ||
@@ -109,7 +99,7 @@ int main() {
           keyClock.restart();
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) {
           i_piece.rotate();
-          startPiece = getBlockCoords(i_piece);
+          startPiece = i_piece.getBlockCoords();
           keyClock.restart();
         }
       }
@@ -130,59 +120,7 @@ int main() {
 
   // if move button clicked, try that move
 }
-pieceType movePiece(matrixType &matrix, pieceType piece, char direction) {
 
-  // Function to check if the new position is valid
-  auto isValidPosition = [&](int x, int y) { // lambda!
-    return (x >= 0 && x < COLUMNS && y >= 0 && y < ROWS &&
-            matrix[y][x] != std::to_underlying(cellType::active) &&
-            matrix[y][x] != std::to_underlying(cellType::sealed));
-  };
-
-  // Move piece left
-  if (direction == 'l') {
-    for (coords &c : piece) {
-      int newX = std::get<0>(c) - 1;
-      int newY = std::get<1>(c);
-      if (!isValidPosition(newX, newY)) {
-        return piece; // Can't move left
-      }
-    }
-    for (coords &c : piece) {
-      std::get<0>(c)--; // Move each block left
-    }
-  }
-
-  // Move piece down
-  else if (direction == 'd') {
-    for (coords &c : piece) {
-      int newX = std::get<0>(c);
-      int newY = std::get<1>(c) + 1;
-      if (!isValidPosition(newX, newY)) {
-        return piece; // Can't move down
-      }
-    }
-    for (coords &c : piece) {
-      std::get<1>(c)++; // Move each block down
-    }
-  }
-
-  // Move piece right
-  else if (direction == 'r') {
-    for (coords &c : piece) {
-      int newX = std::get<0>(c) + 1;
-      int newY = std::get<1>(c);
-      if (!isValidPosition(newX, newY)) {
-        return piece; // Can't move right
-      }
-    }
-    for (coords &c : piece) {
-      std::get<0>(c)++; // Move each block right
-    }
-  }
-
-  return piece; // Return the updated piece
-}
 void printGrid(matrixType matrix) {
   constexpr auto guide =
       "a b c d e f g h i j k l m n o p q r s t u v w x y z"sv;
@@ -197,17 +135,4 @@ void printGrid(matrixType matrix) {
   }
   std::cout << '\n';
   std::cout << '\n';
-}
-
-bool shouldSeal(matrixType matrix, pieceType piece) {
-  // Move piece down
-  for (coords &c : piece) {
-    int newX = std::get<0>(c);
-    int newY = std::get<1>(c) + 1;
-    if (!(newX >= 0 && newX < COLUMNS && newY >= 0 && newY < ROWS &&
-          matrix[newY][newX] != std::to_underlying(cellType::sealed))) {
-      return true; // Can't move down
-    }
-  }
-  return false;
 }
