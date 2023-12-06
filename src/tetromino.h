@@ -1,5 +1,5 @@
-#ifndef TETRIMINO_H
-#define TETRIMINO_H
+#ifndef TETROMINO_H
+#define TETROMINO_H
 
 #include "const.h"
 #include <array>
