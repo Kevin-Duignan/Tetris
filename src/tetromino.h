@@ -1,3 +1,6 @@
+#ifndef TETRIMINO_H
+#define TETRIMINO_H
+
 #include "const.h"
 #include <array>
 #include <bitset>
@@ -44,3 +47,5 @@ auto fun() -> void {
   piece.rotate();
   piece(1, 2);
 }
+
+#endif

@@ -1,8 +1,10 @@
 #include "const.h"
+#include "tetromino.h"
 #include <SFML/Graphics.hpp>
 #include <algorithm>
 #include <array>
 #include <iostream>
+
 using namespace std::literals;
 
 // Types
