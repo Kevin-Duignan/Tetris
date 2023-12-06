@@ -4,16 +4,16 @@
 #include <memory>
 #include <tuple>
 
-template <std::uint8_t Orientations> struct Tetrimino {
+template <std::uint8_t Orientations> struct Tetromino {
   using piece_type = std::array<std::bitset<12>, Orientations>;
   enum class piece_tag_t : short { I, J, L, O, S, T, Z };
 
-  constexpr Tetrimino() = delete;
+  constexpr Tetromino() = delete;
 
-  constexpr Tetrimino(const Tetrimino &other) = default;
-  constexpr Tetrimino(Tetrimino &&other) = default;
+  constexpr Tetromino(const Tetromino &other) = default;
+  constexpr Tetromino(Tetromino &&other) = default;
 
-  constexpr explicit Tetrimino(piece_tag_t tag, std::uint8_t default_orientaion,
+  constexpr explicit Tetromino(piece_tag_t tag, std::uint8_t default_orientaion,
                                piece_type orientations)
       : piece_tag(tag), piece_orientation(default_orientaion),
         piece_mask(orientations), coords(std::make_tuple(0, 0)) {}
@@ -34,12 +34,12 @@ template <std::uint8_t Orientations> struct Tetrimino {
 };
 
 // piece_mask[piece_orientation]
-constexpr auto I_piece_t = Tetrimino<2>(
-    Tetrimino<2>::piece_tag_t::I, std::uint8_t(0),
-    Tetrimino<2>::piece_type{0b0000111100000000, 0b01000100010001000});
+constexpr auto I_piece_t = Tetromino<2>(
+    Tetromino<2>::piece_tag_t::I, std::uint8_t(0),
+    Tetromino<2>::piece_type{0b0000111100000000, 0b01000100010001000});
 
 auto fun() -> void {
-  Tetrimino<2> piece(I_piece_t);
+  Tetromino<2> piece(I_piece_t);
 
   piece.rotate();
   piece(1, 2);
