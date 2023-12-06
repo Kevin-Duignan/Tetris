@@ -1,15 +1,17 @@
-#include "const.h"
 #include <SFML/Graphics.hpp>
 #include <algorithm>
 #include <array>
 #include <iostream>
-using namespace std::literals;
 
+constexpr int GAP = 4, ROWS = 20, COLUMNS = 12, CELL_SIZE = 25;
+using namespace std::literals;
 // Types
 using matrixType = std::array<std::array<int, COLUMNS>, ROWS>;
 using coords = std::tuple<int, int>; // (x, y)
 // NOT PERMANENT. TO be replaced with piece struct.
 using pieceType = std::vector<coords>;
+
+enum class cellType : short { empty, active, sealed };
 
 // Prototypes
 pieceType movePiece(matrixType &matrix, pieceType piece, char direction);
