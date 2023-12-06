@@ -35,7 +35,11 @@ void drawCells(sf::RenderWindow &window, matrixType matrix) {
 }
 
 int main() {
-  Tetromino<2> i_piece(I_piece_t);
+  // EXAMPLE ONLY. Should not matter size of template int since
+  // we will be choosing blocks randomly.
+  Tetromino<2> i_piece = Tetromino<2>(
+      BaseTetromino::piece_tag_t::I,
+      Tetromino<2>::piece_type{0b0000111100000000, 0b01000100010001000});
 
   matrixType matrix;
   for (auto &row : matrix) {
