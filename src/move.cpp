@@ -1,7 +1,7 @@
 #include "../headers/move.h"
 #include "../headers/const.h"
 
-pieceType movePiece(matrixType &matrix, pieceType piece, char direction) {
+pieceCoords movePiece(matrixType &matrix, pieceCoords piece, char direction) {
 
   // Function to check if the new position is valid
   auto isValidPosition = [&](int x, int y) { // lambda!
@@ -55,7 +55,7 @@ pieceType movePiece(matrixType &matrix, pieceType piece, char direction) {
   return piece; // Return the updated piece
 }
 
-bool shouldSeal(matrixType matrix, pieceType piece) {
+bool shouldSeal(matrixType matrix, pieceCoords piece) {
   // Move piece down
   for (coords &c : piece) {
     int newX = std::get<0>(c);

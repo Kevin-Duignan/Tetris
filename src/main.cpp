@@ -9,8 +9,6 @@ using namespace std::literals;
 
 using namespace std::literals;
 
-enum class cellType : short { empty, active, sealed };
-
 void drawCells(sf::RenderWindow &window, matrixType matrix) {
 
   sf::RectangleShape cell(sf::Vector2f(CELL_SIZE, CELL_SIZE));
@@ -55,7 +53,7 @@ int main() {
 
   sf::Clock keyClock;                  // starts the clock
   sf::Time keyTick = sf::seconds(0.1); // game tick every 1 second
-  pieceType startPiece = i_piece.getBlockCoords();
+  pieceCoords startPiece = i_piece.getBlockCoords();
 
   while (window.isOpen()) {
     for (auto event = sf::Event{}; window.pollEvent(event);) {
