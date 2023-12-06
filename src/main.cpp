@@ -1,13 +1,16 @@
+#include "tetromino.h"
 #include <SFML/Graphics.hpp>
 #include <algorithm>
 #include <array>
 #include <iostream>
 
+using namespace std::literals;
+
 constexpr int GAP = 4, ROWS = 20, COLUMNS = 12, CELL_SIZE = 25;
 using namespace std::literals;
 // Types
 using matrixType = std::array<std::array<int, COLUMNS>, ROWS>;
-using coords = std::tuple<int, int>; // (x, y)
+using coords = std::tuple<std::uint8_t, std::uint8_t>; // (x, y)
 // NOT PERMANENT. TO be replaced with piece struct.
 using pieceType = std::vector<coords>;
 
@@ -44,8 +47,8 @@ void drawCells(sf::RenderWindow &window, matrixType matrix) {
 }
 
 int main() {
+  Tetromino<2> i_piece(I_piece_t);
 
-  std::cout << __cplusplus << '\n';
   matrixType matrix;
   for (auto &row : matrix) {
     std::fill(row.begin(), row.end(), 0);
@@ -62,9 +65,7 @@ int main() {
 
   sf::Clock keyClock;                  // starts the clock
   sf::Time keyTick = sf::seconds(0.1); // game tick every 1 second
-  pieceType startPiece = {
-      std::make_tuple(0, 0), std::make_tuple(1, 0),
-      std::make_tuple(1, 1)}; // Temp implementation, don't keep!
+  pieceType startPiece = getBlockCoords(i_piece);
 
   while (window.isOpen()) {
     for (auto event = sf::Event{}; window.pollEvent(event);) {
@@ -88,8 +89,7 @@ int main() {
           matrix[std::get<1>(c)][std::get<0>(c)] =
               std::to_underlying(cellType::sealed);
         }
-        startPiece = {std::make_tuple(5, 0), std::make_tuple(5, 1),
-                      std::make_tuple(6, 1), std::make_tuple(6, 0)};
+        startPiece = getBlockCoords(i_piece);
         continue;
       } else {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) ||
@@ -106,6 +106,10 @@ int main() {
                    sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
           // left key is pressed: move our character
           startPiece = movePiece(matrix, startPiece, 'l');
+          keyClock.restart();
+        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) {
+          i_piece.rotate();
+          startPiece = getBlockCoords(i_piece);
           keyClock.restart();
         }
       }
