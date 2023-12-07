@@ -7,8 +7,6 @@
 
 using namespace std::literals;
 
-using namespace std::literals;
-
 void drawCells(sf::RenderWindow &window, matrixType matrix) {
 
   sf::RectangleShape cell(sf::Vector2f(CELL_SIZE, CELL_SIZE));
@@ -55,7 +53,9 @@ int main() {
 
   sf::Clock keyClock;                  // starts the clock
   sf::Time keyTick = sf::seconds(0.1); // game tick every 1 second
-  pieceCoords startPiece = i_piece.getBlockCoords();
+  pieceCoords startPiece = {
+      std::make_tuple(0, 0),
+      std::make_tuple(1, 0)}; // = i_piece.getBlockCoords();
 
   while (window.isOpen()) {
     for (auto event = sf::Event{}; window.pollEvent(event);) {
@@ -107,7 +107,6 @@ int main() {
 
     if (clock.getElapsedTime() > gameTick) { // game tick
       clock.restart();                       // Reset the clock
-
       startPiece = movePiece(matrix, startPiece, 'd');
     }
 

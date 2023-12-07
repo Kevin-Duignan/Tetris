@@ -2,8 +2,10 @@
 
 #include "const.h"
 #include <array>
+#include <cstdint>
 #include <tuple>
 #include <vector>
+
 
 enum class cellType : short { empty, active, sealed };
 using matrixType = std::array<std::array<int, COLUMNS>, ROWS>;

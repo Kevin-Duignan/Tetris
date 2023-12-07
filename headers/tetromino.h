@@ -32,27 +32,23 @@ template <std::uint8_t Orientations> struct Tetromino : public BaseTetromino {
     current_orientation = (current_orientation + 1) % Orientations;
   }
 
-  auto getBlockCoords() {
-    std::vector<std::tuple<std::uint8_t, std::uint8_t>> blockCoords;
-
-    auto [topLeftX, topLeftY] = coords;
-
-    for (std::uint8_t y = 0; y < 4; ++y) {
+  std::vector<std::tuple<std::uint8_t, std::uint8_t>> getBlockCoords() const {
+    std::vector<std::tuple<std::uint8_t, std::uint8_t>> block_coords;
+    for (std::uint8_t y = 0; y < 3; ++y) {
       for (std::uint8_t x = 0; x < 4; ++x) {
         if ((*this)(x, y)) {
-          blockCoords.push_back(std::make_tuple(topLeftX + x, topLeftY + y));
+          block_coords.emplace_back(std::make_tuple(x, y));
         }
       }
     }
-
-    return blockCoords;
+    return block_coords;
   }
 
   constexpr auto get_orientations() { return Orientations; }
 
-  constexpr auto operator()(const std::uint8_t &x, const std::uint8_t &y) const
-      -> std::bitset<12>::const_reference {
-    return piece_mask.at(current_orientation)[(std::uint8_t(4) * y) + x];
+  constexpr bool operator()(const std::uint8_t &x,
+                            const std::uint8_t &y) const {
+    return piece_mask.at(current_orientation).test((std::uint8_t(4) * y) + x);
   }
 
   piece_type piece_mask;
