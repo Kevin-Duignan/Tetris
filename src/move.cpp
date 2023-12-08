@@ -1,7 +1,8 @@
 #include "../headers/move.h"
 #include "../headers/const.h"
 
-pieceCoords movePiece(matrixType &matrix, pieceCoords piece, char direction) {
+coords movePiece(matrixType &matrix, pieceCoords piece, char direction,
+                 coords offset) {
 
   // Function to check if the new position is valid
   auto isValidPosition = [&](int x, int y) { // lambda!
@@ -13,53 +14,46 @@ pieceCoords movePiece(matrixType &matrix, pieceCoords piece, char direction) {
   // Move piece left
   if (direction == 'l') {
     for (coords &c : piece) {
-      int newX = std::get<0>(c) - 1;
-      int newY = std::get<1>(c);
+      int newX = std::get<0>(c) + std::get<0>(offset) - 1;
+      int newY = std::get<1>(c) + std::get<1>(offset);
       if (!isValidPosition(newX, newY)) {
-        return piece; // Can't move left
+        return offset; // Can't move left
       }
     }
-    for (coords &c : piece) {
-      std::get<0>(c)--; // Move each block left
-    }
+    return std::make_tuple(std::get<0>(offset) - 1, std::get<1>(offset));
   }
 
   // Move piece down
   else if (direction == 'd') {
     for (coords &c : piece) {
-      int newX = std::get<0>(c);
-      int newY = std::get<1>(c) + 1;
+      int newX = std::get<0>(c) + std::get<0>(offset);
+      int newY = std::get<1>(c) + std::get<1>(offset) + 1;
       if (!isValidPosition(newX, newY)) {
-        return piece; // Can't move down
+        return offset; // Can't move down
       }
     }
-    for (coords &c : piece) {
-      std::get<1>(c)++; // Move each block down
-    }
+    return std::make_tuple(std::get<0>(offset), std::get<1>(offset) + 1);
   }
 
   // Move piece right
   else if (direction == 'r') {
     for (coords &c : piece) {
-      int newX = std::get<0>(c) + 1;
-      int newY = std::get<1>(c);
+      int newX = std::get<0>(c) + std::get<0>(offset) + 1;
+      int newY = std::get<1>(c) + std::get<1>(offset);
       if (!isValidPosition(newX, newY)) {
-        return piece; // Can't move right
+        return offset; // Can't move right
       }
     }
-    for (coords &c : piece) {
-      std::get<0>(c)++; // Move each block right
-    }
+    return std::make_tuple(std::get<0>(offset) + 1, std::get<1>(offset));
   }
-
-  return piece; // Return the updated piece
+  return offset;
 }
 
-bool shouldSeal(matrixType matrix, pieceCoords piece) {
+bool shouldSeal(matrixType matrix, pieceCoords piece, coords offset) {
   // Move piece down
   for (coords &c : piece) {
-    int newX = std::get<0>(c);
-    int newY = std::get<1>(c) + 1;
+    int newX = std::get<0>(c) + std::get<0>(offset);
+    int newY = std::get<1>(c) + std::get<1>(offset) + 1;
     if (!(newX >= 0 && newX < COLUMNS && newY >= 0 && newY < ROWS &&
           matrix[newY][newX] != std::to_underlying(cellType::sealed))) {
       return true; // Can't move down

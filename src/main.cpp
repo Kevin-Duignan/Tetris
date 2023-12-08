@@ -41,7 +41,11 @@ int main() {
   for (auto &row : matrix) {
     std::fill(row.begin(), row.end(), 0);
   }
-
+  auto isValidPosition = [&](int x, int y) { // lambda!
+    return (x >= 0 && x < COLUMNS && y >= 0 && y < ROWS &&
+            matrix[y][x] != std::to_underlying(cellType::active) &&
+            matrix[y][x] != std::to_underlying(cellType::sealed));
+  };
   auto window =
       sf::RenderWindow(sf::VideoMode((CELL_SIZE + GAP) * COLUMNS + GAP,
                                      (CELL_SIZE + GAP) * ROWS + GAP),
@@ -53,9 +57,9 @@ int main() {
 
   sf::Clock keyClock;                  // starts the clock
   sf::Time keyTick = sf::seconds(0.1); // game tick every 1 second
-  pieceCoords startPiece = {
-      std::make_tuple(0, 0),
-      std::make_tuple(1, 0)}; // = i_piece.getBlockCoords();
+  pieceCoords startPiece = i_piece.getBlockCoords();
+
+  coords offset = std::make_tuple(0, 0); // (x, y)
 
   while (window.isOpen()) {
     for (auto event = sf::Event{}; window.pollEvent(event);) {
@@ -70,14 +74,16 @@ int main() {
 
     // remove the old piece that is active
     for (coords c : startPiece) {
-      matrix[std::get<1>(c)][std::get<0>(c)] =
-          std::to_underlying(cellType::empty);
+      matrix[std::get<1>(c) + std::get<1>(offset)]
+            [std::get<0>(c) + std::get<0>(offset)] =
+                std::to_underlying(cellType::empty);
     }
     if (keyClock.getElapsedTime() > keyTick) { // game tick
-      if (shouldSeal(matrix, startPiece)) {
+      if (shouldSeal(matrix, startPiece, offset)) {
         for (coords c : startPiece) {
-          matrix[std::get<1>(c)][std::get<0>(c)] =
-              std::to_underlying(cellType::sealed);
+          matrix[std::get<1>(c) + std::get<1>(offset)]
+                [std::get<0>(c) + std::get<0>(offset)] =
+                    std::to_underlying(cellType::sealed);
         }
         startPiece = i_piece.getBlockCoords();
         continue;
@@ -85,21 +91,35 @@ int main() {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) ||
             sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
           // left key is pressed: move our character
-          startPiece = movePiece(matrix, startPiece, 'r');
+          offset = movePiece(matrix, startPiece, 'r', offset);
           keyClock.restart();
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) ||
                    sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
           // left key is pressed: move our character
-          startPiece = movePiece(matrix, startPiece, 'd');
+          offset = movePiece(matrix, startPiece, 'd', offset);
           keyClock.restart();
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) ||
                    sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
           // left key is pressed: move our character
-          startPiece = movePiece(matrix, startPiece, 'l');
+          offset = movePiece(matrix, startPiece, 'l', offset);
           keyClock.restart();
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) {
           i_piece.rotate();
-          startPiece = i_piece.getBlockCoords();
+          bool valid = true;
+          for (coords &c : i_piece.getBlockCoords()) {
+            int newX = std::get<0>(c) + std::get<0>(offset);
+            int newY = std::get<1>(c) + std::get<1>(offset);
+            if (!isValidPosition(newX, newY)) {
+              valid = false;
+            }
+          }
+          if (valid) {
+            startPiece = i_piece.getBlockCoords();
+          } else {
+            i_piece.rotate();
+            i_piece.rotate();
+            i_piece.rotate();
+          }
           keyClock.restart();
         }
       }
@@ -107,13 +127,14 @@ int main() {
 
     if (clock.getElapsedTime() > gameTick) { // game tick
       clock.restart();                       // Reset the clock
-      startPiece = movePiece(matrix, startPiece, 'd');
+      // offset = movePiece(matrix, startPiece, 'd', offset);
     }
 
     // replace the moved (or not) active piece.
     for (coords c : startPiece) {
-      matrix[std::get<1>(c)][std::get<0>(c)] =
-          std::to_underlying(cellType::active);
+      matrix[std::get<1>(c) + std::get<1>(offset)]
+            [std::get<0>(c) + std::get<0>(offset)] =
+                std::to_underlying(cellType::active);
     }
   }
 

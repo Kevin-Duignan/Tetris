@@ -67,7 +67,7 @@ template <std::uint8_t Orientations> struct Tetromino : public BaseTetromino {
 using TetrominoVariant = std::variant<Tetromino<1>, Tetromino<2>, Tetromino<4>>;
 constexpr auto I_piece_t = Tetromino<2>(
     BaseTetromino::piece_tag_t::I,
-    Tetromino<2>::piece_type{0b0000111100000000, 0b01000100010001000});
+    Tetromino<2>::piece_type{0b0000111100000000, 0b0001000100010001});
 
 constexpr auto J_piece_t = Tetromino<4>(
     BaseTetromino::piece_tag_t::J,
