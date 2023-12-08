@@ -37,19 +37,13 @@ template <std::uint8_t Orientations> struct Tetromino : public BaseTetromino {
     std::vector<std::tuple<std::uint8_t, std::uint8_t>> block_coords;
     for (int y = 0; y < 4; ++y) {
       for (int x = 0; x < 4; ++x) {
-        std::cout << piece_mask.at(current_orientation)
-                         .test((std::uint8_t(4) * y) + x);
-        std::cout << x << " " << y << " "
-                  << "\n";
         if ((*this)(std::uint8_t(x), std::uint8_t(y))) {
-          std::cout << "yes";
           block_coords.push_back(std::make_tuple(x, y));
         }
       }
     }
     for (const auto &coord : block_coords) {
       auto [x, y] = coord;
-      std::cout << x << " " << y << std::endl;
     }
     return block_coords;
   }
@@ -65,6 +59,7 @@ template <std::uint8_t Orientations> struct Tetromino : public BaseTetromino {
 };
 
 using TetrominoVariant = std::variant<Tetromino<1>, Tetromino<2>, Tetromino<4>>;
+
 constexpr auto I_piece_t = Tetromino<2>(
     BaseTetromino::piece_tag_t::I,
     Tetromino<2>::piece_type{0b0000111100000000, 0b01000100010001000});
