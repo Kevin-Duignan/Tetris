@@ -1,5 +1,6 @@
 #include "../headers/const.h"
 #include "../headers/move.h"
+#include "../headers/random.h"
 #include "../headers/tetromino.h"
 
 #include <SFML/Graphics.hpp>
@@ -38,6 +39,7 @@ int main() {
   Tetromino<2> i_piece(I_piece_t);
 
   matrixType matrix;
+
   for (auto &row : matrix) {
     std::fill(row.begin(), row.end(), 0);
   }
@@ -57,13 +59,14 @@ int main() {
       std::make_tuple(0, 0),
       std::make_tuple(1, 0)}; // = i_piece.getBlockCoords();
 
+  choose_random(tetromino_piece_types);
   while (window.isOpen()) {
     for (auto event = sf::Event{}; window.pollEvent(event);) {
       if (event.type == sf::Event::Closed) {
         window.close();
       }
     }
-    printGrid(matrix);
+    // printGrid(matrix);
     window.clear();
     drawCells(window, matrix);
     window.display();
