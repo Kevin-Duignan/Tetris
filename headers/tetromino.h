@@ -1,6 +1,8 @@
 #pragma once
 
+#include <algorithm>
 #include <bitset>
+#include <iostream>
 #include <map>
 #include <memory>
 #include <tuple>
@@ -10,23 +12,22 @@
 struct BaseTetromino {
   enum class piece_tag_t : short { I, J, L, O, S, T, Z };
 
-  constexpr explicit BaseTetromino(piece_tag_t tag)
-      : piece_tag(tag), current_orientation(0), coords(0, 0) {}
+  constexpr explicit BaseTetromino(piece_tag_t tag) : piece_tag(tag) {}
 
   piece_tag_t piece_tag;
-  std::uint8_t current_orientation;
-  std::tuple<std::uint8_t, std::uint8_t> coords;
+  std::uint8_t current_orientation = 0;
+  std::tuple<std::uint8_t, std::uint8_t> coords = std::make_tuple(0, 0);
 };
 
 template <std::uint8_t Orientations> struct Tetromino : public BaseTetromino {
-  using piece_type = std::array<std::bitset<12>, Orientations>;
+  using piece_type = std::array<std::bitset<16>, Orientations>;
 
   constexpr Tetromino() = delete;
   constexpr Tetromino(const Tetromino &other) = default;
   constexpr Tetromino(Tetromino &&other) = default;
 
   constexpr explicit Tetromino(piece_tag_t tag, piece_type orientations)
-      : BaseTetromino{tag} {}
+      : BaseTetromino{tag}, piece_mask(orientations) {}
 
   auto rotate() -> void {
     current_orientation = (current_orientation + 1) % Orientations;
@@ -34,12 +35,21 @@ template <std::uint8_t Orientations> struct Tetromino : public BaseTetromino {
 
   std::vector<std::tuple<std::uint8_t, std::uint8_t>> getBlockCoords() const {
     std::vector<std::tuple<std::uint8_t, std::uint8_t>> block_coords;
-    for (std::uint8_t y = 0; y < 3; ++y) {
-      for (std::uint8_t x = 0; x < 4; ++x) {
-        if ((*this)(x, y)) {
-          block_coords.emplace_back(std::make_tuple(x, y));
+    for (int y = 0; y < 4; ++y) {
+      for (int x = 0; x < 4; ++x) {
+        std::cout << piece_mask.at(current_orientation)
+                         .test((std::uint8_t(4) * y) + x);
+        std::cout << x << " " << y << " "
+                  << "\n";
+        if ((*this)(std::uint8_t(x), std::uint8_t(y))) {
+          std::cout << "yes";
+          block_coords.push_back(std::make_tuple(x, y));
         }
       }
+    }
+    for (const auto &coord : block_coords) {
+      auto [x, y] = coord;
+      std::cout << x << " " << y << std::endl;
     }
     return block_coords;
   }
@@ -89,10 +99,3 @@ constexpr auto Z_piece_t = Tetromino<2>(
 constexpr std::array<TetrominoVariant, 7> tetromino_piece_types = {
     I_piece_t, J_piece_t, L_piece_t, O_piece_t,
     S_piece_t, T_piece_t, Z_piece_t};
-
-auto fun() -> void {
-  // constexpr auto &base = tetromino_piece_types[0];
-  // Tetromino<base.get_orientations()> piece(base);
-  // piece.rotate();
-  // piece(1, 2);
-}
