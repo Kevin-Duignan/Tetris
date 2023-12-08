@@ -85,7 +85,9 @@ int main() {
                 [std::get<0>(c) + std::get<0>(offset)] =
                     std::to_underlying(cellType::sealed);
         }
+        Tetromino<2> i_piece(I_piece_t);
         startPiece = i_piece.getBlockCoords();
+        offset = std::make_tuple(0, 0);
         continue;
       } else {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) ||
@@ -115,10 +117,6 @@ int main() {
           }
           if (valid) {
             startPiece = i_piece.getBlockCoords();
-          } else {
-            i_piece.rotate();
-            i_piece.rotate();
-            i_piece.rotate();
           }
           keyClock.restart();
         }
@@ -127,7 +125,7 @@ int main() {
 
     if (clock.getElapsedTime() > gameTick) { // game tick
       clock.restart();                       // Reset the clock
-      // offset = movePiece(matrix, startPiece, 'd', offset);
+      offset = movePiece(matrix, startPiece, 'd', offset);
     }
 
     // replace the moved (or not) active piece.
