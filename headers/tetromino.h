@@ -3,8 +3,8 @@
 #include <algorithm>
 #include <bitset>
 #include <iostream>
-#include <map>
 #include <memory>
+#include <random>
 #include <tuple>
 #include <variant>
 #include <vector>
@@ -42,9 +42,7 @@ template <std::uint8_t Orientations> struct Tetromino : public BaseTetromino {
         }
       }
     }
-    for (const auto &coord : block_coords) {
-      auto [x, y] = coord;
-    }
+
     return block_coords;
   }
 
@@ -96,10 +94,12 @@ constexpr std::array<TetrominoVariant, 7> tetromino_piece_types = {
     S_piece_t, T_piece_t, Z_piece_t};
 
 // Choosing the random tetrimino
-void choose_random(std::array<TetrominoVariant, 7> pieces) {
+auto choose_random(std::array<TetrominoVariant, 7> pieces) {
   std::random_device rd;  // a seed source for the random number engine
   std::mt19937 gen(rd()); // mersenne_twister_engine seeded with rd()
   std::uniform_int_distribution<> distrib(1, pieces.size());
 
-  std::cout << distrib(gen);
+  int random_index = distrib(gen);
+  TetrominoVariant random_piece = pieces.at(random_index);
+  return random_piece;
 }

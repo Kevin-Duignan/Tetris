@@ -17,7 +17,7 @@ FetchContent_Declare(SFML
     GIT_TAG 2.6.x)
     FetchContent_MakeAvailable(SFML)
 
-add_library(lib OBJECT src/move.cpp src/random.cpp)
+add_library(lib OBJECT src/move.cpp)
 
 add_executable(Tetris src/main.cpp)
 target_link_libraries(Tetris PRIVATE sfml-graphics)

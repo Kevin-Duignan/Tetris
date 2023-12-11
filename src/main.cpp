@@ -1,6 +1,5 @@
 #include "../headers/const.h"
 #include "../headers/move.h"
-#include "../headers/random.h"
 #include "../headers/tetromino.h"
 
 #include <SFML/Graphics.hpp>
@@ -37,17 +36,36 @@ int main() {
   // EXAMPLE ONLY. Should not matter size of template int since
   // we will be choosing blocks randomly.
   Tetromino<2> i_piece(I_piece_t);
+  pieceCoords startPiece = i_piece.getBlockCoords();
 
   matrixType matrix;
-
   for (auto &row : matrix) {
     std::fill(row.begin(), row.end(), 0);
   }
-  auto isValidPosition = [&](int x, int y) { // lambda!
+
+  auto isValidPosition = [&](int x, int y) {
     return (x >= 0 && x < COLUMNS && y >= 0 && y < ROWS &&
             matrix[y][x] != std::to_underlying(cellType::active) &&
             matrix[y][x] != std::to_underlying(cellType::sealed));
   };
+
+  auto assign_piece = [](auto &&arg) -> TetrominoVariant {
+    using T = std::decay_t<decltype(arg)>;
+    return T(arg);
+  };
+
+  auto rotate = [](auto &&arg) { arg.rotate(); };
+
+  auto get_block_coords = [](auto &&arg) -> pieceCoords {
+    return arg.getBlockCoords();
+  };
+
+  //  std::variant<Tetromino<1>, Tetromino<2>, Tetromino<4>>;
+  TetrominoVariant piece_t = choose_random(tetromino_piece_types);
+  // Create a copy without knowing underlying type
+  TetrominoVariant piece = std::visit(assign_piece, piece_t);
+  auto start_piece = std::visit(get_block_coords, piece);
+
   auto window =
       sf::RenderWindow(sf::VideoMode((CELL_SIZE + GAP) * COLUMNS + GAP,
                                      (CELL_SIZE + GAP) * ROWS + GAP),
@@ -59,11 +77,9 @@ int main() {
 
   sf::Clock keyClock;                  // starts the clock
   sf::Time keyTick = sf::seconds(0.1); // game tick every 1 second
-  pieceCoords startPiece = i_piece.getBlockCoords();
 
   coords offset = std::make_tuple(0, 0); // (x, y)
 
-  choose_random(tetromino_piece_types);
   while (window.isOpen()) {
     for (auto event = sf::Event{}; window.pollEvent(event);) {
       if (event.type == sf::Event::Closed) {
@@ -76,7 +92,7 @@ int main() {
     window.display();
 
     // remove the old piece that is active
-    for (coords c : startPiece) {
+    for (auto [x, y] : startPiece) {
       matrix[std::get<1>(c) + std::get<1>(offset)]
             [std::get<0>(c) + std::get<0>(offset)] =
                 std::to_underlying(cellType::empty);
