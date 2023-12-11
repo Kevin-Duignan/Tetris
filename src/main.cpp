@@ -1,6 +1,5 @@
 #include "../headers/const.h"
 #include "../headers/move.h"
-#include "../headers/random.h"
 #include "../headers/tetromino.h"
 
 #include <SFML/Graphics.hpp>
@@ -36,18 +35,30 @@ void drawCells(sf::RenderWindow &window, matrixType matrix) {
 int main() {
   // EXAMPLE ONLY. Should not matter size of template int since
   // we will be choosing blocks randomly.
-  Tetromino<2> i_piece(I_piece_t);
+  // Tetromino<2> i_piece(I_piece_t);
+  // pieceCoords startPiece = i_piece.getBlockCoords();
 
   matrixType matrix;
-
   for (auto &row : matrix) {
     std::fill(row.begin(), row.end(), 0);
   }
-  auto isValidPosition = [&](int x, int y) { // lambda!
+
+  auto isValidPosition = [&](int x, int y) {
     return (x >= 0 && x < COLUMNS && y >= 0 && y < ROWS &&
             matrix[y][x] != std::to_underlying(cellType::active) &&
             matrix[y][x] != std::to_underlying(cellType::sealed));
   };
+
+  auto rotate = [](auto &&arg) { arg.rotate(); };
+
+  auto get_block_coords = [](auto &&arg) -> pieceCoords {
+    return arg.getBlockCoords();
+  };
+
+  //  std::variant<Tetromino<1>, Tetromino<2>, Tetromino<4>>;
+  TetrominoVariant piece = choose_random(tetromino_piece_types);
+  auto start_piece = std::visit(get_block_coords, piece);
+
   auto window =
       sf::RenderWindow(sf::VideoMode((CELL_SIZE + GAP) * COLUMNS + GAP,
                                      (CELL_SIZE + GAP) * ROWS + GAP),
@@ -59,11 +70,9 @@ int main() {
 
   sf::Clock keyClock;                  // starts the clock
   sf::Time keyTick = sf::seconds(0.1); // game tick every 1 second
-  pieceCoords startPiece = i_piece.getBlockCoords();
 
   coords offset = std::make_tuple(0, 0); // (x, y)
 
-  choose_random(tetromino_piece_types);
   while (window.isOpen()) {
     for (auto event = sf::Event{}; window.pollEvent(event);) {
       if (event.type == sf::Event::Closed) {
@@ -76,50 +85,54 @@ int main() {
     window.display();
 
     // remove the old piece that is active
-    for (coords c : startPiece) {
-      matrix[std::get<1>(c) + std::get<1>(offset)]
-            [std::get<0>(c) + std::get<0>(offset)] =
-                std::to_underlying(cellType::empty);
+    for (auto [c_x, c_y] : start_piece) {
+      auto [offset_x, offset_y] = offset;
+      matrix[c_y + offset_y][c_x + offset_x] =
+          std::to_underlying(cellType::empty);
     }
     if (keyClock.getElapsedTime() > keyTick) { // game tick
-      if (shouldSeal(matrix, startPiece, offset)) {
-        for (coords c : startPiece) {
-          matrix[std::get<1>(c) + std::get<1>(offset)]
-                [std::get<0>(c) + std::get<0>(offset)] =
-                    std::to_underlying(cellType::sealed);
+      if (shouldSeal(matrix, start_piece, offset)) {
+        for (auto [c_x, c_y] : start_piece) {
+          auto [offset_x, offset_y] = offset;
+          matrix[c_y + offset_y][c_x + offset_x] =
+              std::to_underlying(cellType::sealed);
         }
-        Tetromino<2> i_piece(I_piece_t);
-        startPiece = i_piece.getBlockCoords();
+        piece = std::move(choose_random(tetromino_piece_types));
+        // auto tag =
+        // std::visit([](auto &&arg) -> auto { return arg.piece_tag; }, piece);
+        // std::cout << std::to_underlying(tag) << "\n";
+        start_piece = std::visit(get_block_coords, piece);
         offset = std::make_tuple(0, 0);
         continue;
       } else {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) ||
             sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
           // left key is pressed: move our character
-          offset = movePiece(matrix, startPiece, 'r', offset);
+          offset = movePiece(matrix, start_piece, 'r', offset);
           keyClock.restart();
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) ||
                    sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
           // left key is pressed: move our character
-          offset = movePiece(matrix, startPiece, 'd', offset);
+          offset = movePiece(matrix, start_piece, 'd', offset);
           keyClock.restart();
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) ||
                    sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
           // left key is pressed: move our character
-          offset = movePiece(matrix, startPiece, 'l', offset);
+          offset = movePiece(matrix, start_piece, 'l', offset);
           keyClock.restart();
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) {
-          i_piece.rotate();
+          std::visit(rotate, piece);
           bool valid = true;
-          for (coords &c : i_piece.getBlockCoords()) {
-            int newX = std::get<0>(c) + std::get<0>(offset);
-            int newY = std::get<1>(c) + std::get<1>(offset);
+          for (auto &[c_x, c_y] : std::visit(get_block_coords, piece)) {
+            auto [offset_x, offset_y] = offset;
+            int newX = c_x + offset_x;
+            int newY = c_y + offset_y;
             if (!isValidPosition(newX, newY)) {
               valid = false;
             }
           }
           if (valid) {
-            startPiece = i_piece.getBlockCoords();
+            start_piece = std::visit(get_block_coords, piece);
           }
           keyClock.restart();
         }
@@ -128,18 +141,17 @@ int main() {
 
     if (clock.getElapsedTime() > gameTick) { // game tick
       clock.restart();                       // Reset the clock
-      offset = movePiece(matrix, startPiece, 'd', offset);
+      offset = movePiece(matrix, start_piece, 'd', offset);
     }
 
     // replace the moved (or not) active piece.
-    for (coords c : startPiece) {
-      matrix[std::get<1>(c) + std::get<1>(offset)]
-            [std::get<0>(c) + std::get<0>(offset)] =
-                std::to_underlying(cellType::active);
+    for (auto [c_x, c_y] : start_piece) {
+      auto [offset_x, offset_y] = offset;
+      matrix[c_y + offset_y][c_x + offset_x] =
+          std::to_underlying(cellType::active);
     }
+    // if move button clicked, try that move
   }
-
-  // if move button clicked, try that move
 }
 
 void printGrid(matrixType matrix) {

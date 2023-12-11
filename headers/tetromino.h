@@ -3,8 +3,8 @@
 #include <algorithm>
 #include <bitset>
 #include <iostream>
-#include <map>
 #include <memory>
+#include <random>
 #include <tuple>
 #include <variant>
 #include <vector>
@@ -24,7 +24,8 @@ template <std::uint8_t Orientations> struct Tetromino : public BaseTetromino {
 
   constexpr Tetromino() = delete;
   constexpr Tetromino(const Tetromino &other) = default;
-  constexpr Tetromino(Tetromino &&other) = default;
+  constexpr Tetromino(Tetromino &&other) noexcept = default;
+  constexpr Tetromino &operator=(const Tetromino &other) = default;
 
   constexpr explicit Tetromino(piece_tag_t tag, piece_type orientations)
       : BaseTetromino{tag}, piece_mask(orientations) {}
@@ -42,9 +43,7 @@ template <std::uint8_t Orientations> struct Tetromino : public BaseTetromino {
         }
       }
     }
-    for (const auto &coord : block_coords) {
-      auto [x, y] = coord;
-    }
+
     return block_coords;
   }
 
@@ -62,17 +61,17 @@ using TetrominoVariant = std::variant<Tetromino<1>, Tetromino<2>, Tetromino<4>>;
 
 constexpr auto I_piece_t = Tetromino<2>(
     BaseTetromino::piece_tag_t::I,
-    Tetromino<2>::piece_type{0b0000000000001111, 0b0001000100010001});
+    Tetromino<2>::piece_type{0b0000111100000000, 0b0010001000100010});
 
 constexpr auto J_piece_t = Tetromino<4>(
     BaseTetromino::piece_tag_t::J,
-    Tetromino<4>::piece_type{0b0100111000000000, 0b0010011001000000,
-                             0b0000111001000000, 0b0100110001000000});
+    Tetromino<4>::piece_type{0b0000011101000000, 0b0010001001100000,
+                             0b0000001011100000, 0b0100010001100000});
 
 constexpr auto L_piece_t = Tetromino<4>(
     BaseTetromino::piece_tag_t::L,
-    Tetromino<4>::piece_type{0b0010111000000000, 0b0100110010000000,
-                             0b0000111010000000, 0b0010011000100000});
+    Tetromino<4>::piece_type{0b0000011100010000, 0b0110001000100000,
+                             0b0000100011100000, 0b0110010001000000});
 
 constexpr auto O_piece_t =
     Tetromino<1>(BaseTetromino::piece_tag_t::O,
@@ -80,17 +79,35 @@ constexpr auto O_piece_t =
 
 constexpr auto S_piece_t = Tetromino<2>(
     BaseTetromino::piece_tag_t::S,
-    Tetromino<2>::piece_type{0b0000011011000000, 0b0100011000100000});
+    Tetromino<2>::piece_type{0b0100011000100000, 0b0000011000110000});
 
 constexpr auto T_piece_t = Tetromino<4>(
     BaseTetromino::piece_tag_t::T,
-    Tetromino<4>::piece_type{0b0000011100100000, 0b0100011001000000,
-                             0b0100011100000000, 0b0100110001000000});
+    Tetromino<4>::piece_type{0b0000010011100000, 0b0100011001000000,
+                             0b0000011100100000, 0b0010011000100000});
 
 constexpr auto Z_piece_t = Tetromino<2>(
     BaseTetromino::piece_tag_t::Z,
-    Tetromino<2>::piece_type{0b0000111000100000, 0b0100110000100000});
+    Tetromino<2>::piece_type{0b0010011001000000, 0b0000001101100000});
 
 constexpr std::array<TetrominoVariant, 7> tetromino_piece_types = {
     I_piece_t, J_piece_t, L_piece_t, O_piece_t,
     S_piece_t, T_piece_t, Z_piece_t};
+
+// Choosing the random tetrimino
+auto choose_random(std::array<TetrominoVariant, 7> pieces) {
+  std::random_device rd;  // a seed source for the random number engine
+  std::mt19937 gen(rd()); // mersenne_twister_engine seeded with rd()
+  std::uniform_int_distribution<> distrib(0, pieces.size() - 1);
+
+  int random_index = distrib(gen);
+  TetrominoVariant random_piece_t = pieces.at(random_index);
+  // Create a copy without knowing underlying type
+  TetrominoVariant random_piece = std::visit(
+      [](auto &&arg) -> TetrominoVariant {
+        using T = std::decay_t<decltype(arg)>;
+        return T(arg);
+      },
+      random_piece_t);
+  return random_piece;
+}
