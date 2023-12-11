@@ -100,6 +100,13 @@ auto choose_random(std::array<TetrominoVariant, 7> pieces) {
   std::uniform_int_distribution<> distrib(1, pieces.size());
 
   int random_index = distrib(gen);
-  TetrominoVariant random_piece = pieces.at(random_index);
+  TetrominoVariant random_piece_t = pieces.at(random_index);
+  // Create a copy without knowing underlying type
+  TetrominoVariant random_piece = std::visit(
+      [](auto &&arg) -> TetrominoVariant {
+        using T = std::decay_t<decltype(arg)>;
+        return T(arg);
+      },
+      random_piece_t);
   return random_piece;
 }

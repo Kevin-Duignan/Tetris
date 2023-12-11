@@ -49,11 +49,6 @@ int main() {
             matrix[y][x] != std::to_underlying(cellType::sealed));
   };
 
-  auto assign_piece = [](auto &&arg) -> TetrominoVariant {
-    using T = std::decay_t<decltype(arg)>;
-    return T(arg);
-  };
-
   auto rotate = [](auto &&arg) { arg.rotate(); };
 
   auto get_block_coords = [](auto &&arg) -> pieceCoords {
@@ -61,9 +56,7 @@ int main() {
   };
 
   //  std::variant<Tetromino<1>, Tetromino<2>, Tetromino<4>>;
-  TetrominoVariant piece_t = choose_random(tetromino_piece_types);
-  // Create a copy without knowing underlying type
-  TetrominoVariant piece = std::visit(assign_piece, piece_t);
+  TetrominoVariant piece = choose_random(tetromino_piece_types);
   auto start_piece = std::visit(get_block_coords, piece);
 
   auto window =
@@ -104,6 +97,7 @@ int main() {
           matrix[c_y + offset_y][c_x + offset_x] =
               std::to_underlying(cellType::sealed);
         }
+        TetrominoVariant piece = choose_random(tetromino_piece_types);
         start_piece = std::visit(get_block_coords, piece);
         offset = std::make_tuple(0, 0);
         continue;
