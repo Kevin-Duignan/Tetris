@@ -35,8 +35,8 @@ void drawCells(sf::RenderWindow &window, matrixType matrix) {
 int main() {
   // EXAMPLE ONLY. Should not matter size of template int since
   // we will be choosing blocks randomly.
-  Tetromino<2> i_piece(I_piece_t);
-  pieceCoords startPiece = i_piece.getBlockCoords();
+  // Tetromino<2> i_piece(I_piece_t);
+  // pieceCoords startPiece = i_piece.getBlockCoords();
 
   matrixType matrix;
   for (auto &row : matrix) {
@@ -92,49 +92,50 @@ int main() {
     window.display();
 
     // remove the old piece that is active
-    for (auto [c_x, c_y] : startPiece) {
+    for (auto [c_x, c_y] : start_piece) {
       auto [offset_x, offset_y] = offset;
       matrix[c_y + offset_y][c_x + offset_x] =
           std::to_underlying(cellType::empty);
     }
     if (keyClock.getElapsedTime() > keyTick) { // game tick
-      if (shouldSeal(matrix, startPiece, offset)) {
-        for (auto [c_x, c_y] : startPiece) {
+      if (shouldSeal(matrix, start_piece, offset)) {
+        for (auto [c_x, c_y] : start_piece) {
           auto [offset_x, offset_y] = offset;
           matrix[c_y + offset_y][c_x + offset_x] =
               std::to_underlying(cellType::sealed);
         }
-        startPiece = i_piece.getBlockCoords();
+        start_piece = std::visit(get_block_coords, piece);
         offset = std::make_tuple(0, 0);
         continue;
       } else {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) ||
             sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
           // left key is pressed: move our character
-          offset = movePiece(matrix, startPiece, 'r', offset);
+          offset = movePiece(matrix, start_piece, 'r', offset);
           keyClock.restart();
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) ||
                    sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
           // left key is pressed: move our character
-          offset = movePiece(matrix, startPiece, 'd', offset);
+          offset = movePiece(matrix, start_piece, 'd', offset);
           keyClock.restart();
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) ||
                    sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
           // left key is pressed: move our character
-          offset = movePiece(matrix, startPiece, 'l', offset);
+          offset = movePiece(matrix, start_piece, 'l', offset);
           keyClock.restart();
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) {
-          i_piece.rotate();
+          std::visit(rotate, piece);
           bool valid = true;
-          for (coords &c : i_piece.getBlockCoords()) {
-            int newX = std::get<0>(c) + std::get<0>(offset);
-            int newY = std::get<1>(c) + std::get<1>(offset);
+          for (auto &[c_x, c_y] : std::visit(get_block_coords, piece)) {
+            auto [offset_x, offset_y] = offset;
+            int newX = c_x + offset_x;
+            int newY = c_y + offset_y;
             if (!isValidPosition(newX, newY)) {
               valid = false;
             }
           }
           if (valid) {
-            startPiece = i_piece.getBlockCoords();
+            start_piece = std::visit(get_block_coords, piece);
           }
           keyClock.restart();
         }
@@ -143,30 +144,31 @@ int main() {
 
     if (clock.getElapsedTime() > gameTick) { // game tick
       clock.restart();                       // Reset the clock
-      offset = movePiece(matrix, startPiece, 'd', offset);
+      offset = movePiece(matrix, start_piece, 'd', offset);
     }
 
     // replace the moved (or not) active piece.
-    for (auto [c_x, c_y] : startPiece) {
+    for (auto [c_x, c_y] : start_piece) {
       auto [offset_x, offset_y] = offset;
       matrix[c_y + offset_y][c_x + offset_x] =
           std::to_underlying(cellType::active);
     }
     // if move button clicked, try that move
   }
+}
 
-  void printGrid(matrixType matrix) {
-    constexpr auto guide =
-        "a b c d e f g h i j k l m n o p q r s t u v w x y z"sv;
-    std::cout << "  " << guide.substr(0, matrix[0].size() * 2) << "\n";
-    for (auto i{0UL}; const auto &row : matrix) { // Debugging only!
-      std::cout << guide[i] << ' ';
-      for (const auto &cell : row) {
-        std::cout << cell << ' ';
-      }
-      std::cout << '\n';
-      i += 2;
+void printGrid(matrixType matrix) {
+  constexpr auto guide =
+      "a b c d e f g h i j k l m n o p q r s t u v w x y z"sv;
+  std::cout << "  " << guide.substr(0, matrix[0].size() * 2) << "\n";
+  for (auto i{0UL}; const auto &row : matrix) { // Debugging only!
+    std::cout << guide[i] << ' ';
+    for (const auto &cell : row) {
+      std::cout << cell << ' ';
     }
     std::cout << '\n';
-    std::cout << '\n';
+    i += 2;
   }
+  std::cout << '\n';
+  std::cout << '\n';
+}
