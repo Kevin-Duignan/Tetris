@@ -92,17 +92,17 @@ int main() {
     window.display();
 
     // remove the old piece that is active
-    for (auto [x, y] : startPiece) {
-      matrix[std::get<1>(c) + std::get<1>(offset)]
-            [std::get<0>(c) + std::get<0>(offset)] =
-                std::to_underlying(cellType::empty);
+    for (auto [c_x, c_y] : startPiece) {
+      auto [offset_x, offset_y] = offset;
+      matrix[c_y + offset_y][c_x + offset_x] =
+          std::to_underlying(cellType::empty);
     }
     if (keyClock.getElapsedTime() > keyTick) { // game tick
       if (shouldSeal(matrix, startPiece, offset)) {
-        for (coords c : startPiece) {
-          matrix[std::get<1>(c) + std::get<1>(offset)]
-                [std::get<0>(c) + std::get<0>(offset)] =
-                    std::to_underlying(cellType::sealed);
+        for (auto [c_x, c_y] : startPiece) {
+          auto [offset_x, offset_y] = offset;
+          matrix[c_y + offset_y][c_x + offset_x] =
+              std::to_underlying(cellType::sealed);
         }
         startPiece = i_piece.getBlockCoords();
         offset = std::make_tuple(0, 0);
@@ -147,28 +147,26 @@ int main() {
     }
 
     // replace the moved (or not) active piece.
-    for (coords c : startPiece) {
-      matrix[std::get<1>(c) + std::get<1>(offset)]
-            [std::get<0>(c) + std::get<0>(offset)] =
-                std::to_underlying(cellType::active);
+    for (auto [c_x, c_y] : startPiece) {
+      auto [offset_x, offset_y] = offset;
+      matrix[c_y + offset_y][c_x + offset_x] =
+          std::to_underlying(cellType::active);
     }
+    // if move button clicked, try that move
   }
 
-  // if move button clicked, try that move
-}
-
-void printGrid(matrixType matrix) {
-  constexpr auto guide =
-      "a b c d e f g h i j k l m n o p q r s t u v w x y z"sv;
-  std::cout << "  " << guide.substr(0, matrix[0].size() * 2) << "\n";
-  for (auto i{0UL}; const auto &row : matrix) { // Debugging only!
-    std::cout << guide[i] << ' ';
-    for (const auto &cell : row) {
-      std::cout << cell << ' ';
+  void printGrid(matrixType matrix) {
+    constexpr auto guide =
+        "a b c d e f g h i j k l m n o p q r s t u v w x y z"sv;
+    std::cout << "  " << guide.substr(0, matrix[0].size() * 2) << "\n";
+    for (auto i{0UL}; const auto &row : matrix) { // Debugging only!
+      std::cout << guide[i] << ' ';
+      for (const auto &cell : row) {
+        std::cout << cell << ' ';
+      }
+      std::cout << '\n';
+      i += 2;
     }
     std::cout << '\n';
-    i += 2;
+    std::cout << '\n';
   }
-  std::cout << '\n';
-  std::cout << '\n';
-}
