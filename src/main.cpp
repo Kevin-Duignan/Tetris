@@ -97,7 +97,10 @@ int main() {
           matrix[c_y + offset_y][c_x + offset_x] =
               std::to_underlying(cellType::sealed);
         }
-        TetrominoVariant piece = choose_random(tetromino_piece_types);
+        piece = std::move(choose_random(tetromino_piece_types));
+        // auto tag =
+        // std::visit([](auto &&arg) -> auto { return arg.piece_tag; }, piece);
+        // std::cout << std::to_underlying(tag) << "\n";
         start_piece = std::visit(get_block_coords, piece);
         offset = std::make_tuple(0, 0);
         continue;
