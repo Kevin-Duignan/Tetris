@@ -88,7 +88,6 @@ int main() {
                 [std::get<0>(c) + std::get<0>(offset)] =
                     std::to_underlying(cellType::sealed);
         }
-        Tetromino<2> i_piece(I_piece_t);
         startPiece = i_piece.getBlockCoords();
         offset = std::make_tuple(0, 0);
         continue;

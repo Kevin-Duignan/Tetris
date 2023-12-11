@@ -62,7 +62,7 @@ using TetrominoVariant = std::variant<Tetromino<1>, Tetromino<2>, Tetromino<4>>;
 
 constexpr auto I_piece_t = Tetromino<2>(
     BaseTetromino::piece_tag_t::I,
-    Tetromino<2>::piece_type{0b0000000000001111, 0b0001000100010001});
+    Tetromino<2>::piece_type{0b0000000011110000, 0b0010001000100010});
 
 constexpr auto J_piece_t = Tetromino<4>(
     BaseTetromino::piece_tag_t::J,
@@ -94,3 +94,12 @@ constexpr auto Z_piece_t = Tetromino<2>(
 constexpr std::array<TetrominoVariant, 7> tetromino_piece_types = {
     I_piece_t, J_piece_t, L_piece_t, O_piece_t,
     S_piece_t, T_piece_t, Z_piece_t};
+
+// Choosing the random tetrimino
+void choose_random(std::array<TetrominoVariant, 7> pieces) {
+  std::random_device rd;  // a seed source for the random number engine
+  std::mt19937 gen(rd()); // mersenne_twister_engine seeded with rd()
+  std::uniform_int_distribution<> distrib(1, pieces.size());
+
+  std::cout << distrib(gen);
+}
