@@ -65,11 +65,11 @@ int main() {
                        "CMake SFML Project");
   window.setFramerateLimit(144);
 
-  sf::Clock clock;                      // starts the clock
-  sf::Time gameTick = sf::seconds(0.5); // game tick every 1 second
+  sf::Clock clock;                    // starts the clock
+  sf::Time gameTick = sf::seconds(1); // game tick every 1 second
 
   sf::Clock keyClock;                  // starts the clock
-  sf::Time keyTick = sf::seconds(0.1); // game tick every 1 second
+  sf::Time keyTick = sf::seconds(0.1); // can press a key every 0.1 seconds.
 
   coords offset = std::make_tuple(0, 0); // (x, y)
 
@@ -79,7 +79,6 @@ int main() {
         window.close();
       }
     }
-    // printGrid(matrix);
     window.clear();
     drawCells(window, matrix);
     window.display();

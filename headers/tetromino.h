@@ -58,37 +58,37 @@ template <std::uint8_t Orientations> struct Tetromino : public BaseTetromino {
 };
 
 using TetrominoVariant = std::variant<Tetromino<1>, Tetromino<2>, Tetromino<4>>;
-
 constexpr auto I_piece_t = Tetromino<2>(
     BaseTetromino::piece_tag_t::I,
-    Tetromino<2>::piece_type{0b0000111100000000, 0b0010001000100010});
+    Tetromino<2>::piece_type{0b0000111100000000, 0b0001000100010001});
 
 constexpr auto J_piece_t = Tetromino<4>(
     BaseTetromino::piece_tag_t::J,
-    Tetromino<4>::piece_type{0b0000011101000000, 0b0010001001100000,
-                             0b0000001011100000, 0b0100010001100000});
+    Tetromino<4>::piece_type{0b0000000001110001, 0b0000000100010011,
+                             0b0000000001000111, 0b0000001100100010});
 
 constexpr auto L_piece_t = Tetromino<4>(
     BaseTetromino::piece_tag_t::L,
-    Tetromino<4>::piece_type{0b0000011100010000, 0b0110001000100000,
-                             0b0000100011100000, 0b0110010001000000});
+    Tetromino<4>::piece_type{0b0000000000010111, 0b0000001000100011,
+                             0b0000000001110100, 0b0000001100010001});
 
 constexpr auto O_piece_t =
     Tetromino<1>(BaseTetromino::piece_tag_t::O,
-                 Tetromino<1>::piece_type{0b0000011001100000});
+                 Tetromino<1>::piece_type{0b0000000000110011});
 
 constexpr auto S_piece_t = Tetromino<2>(
     BaseTetromino::piece_tag_t::S,
-    Tetromino<2>::piece_type{0b0100011000100000, 0b0000011000110000});
+    Tetromino<2>::piece_type{0b0000000000110110, 0b0000001000110001});
 
 constexpr auto T_piece_t = Tetromino<4>(
     BaseTetromino::piece_tag_t::T,
-    Tetromino<4>::piece_type{0b0000010011100000, 0b0100011001000000,
-                             0b0000011100100000, 0b0010011000100000});
+    Tetromino<4>::piece_type{0b0000000000100111, 0b0000010001100100,
+                             0b0000011100100000, 0b0000000100110001});
 
 constexpr auto Z_piece_t = Tetromino<2>(
     BaseTetromino::piece_tag_t::Z,
-    Tetromino<2>::piece_type{0b0010011001000000, 0b0000001101100000});
+    Tetromino<2>::piece_type{0b0000000001100011, 0b0000000100110010});
+// clang-format on
 
 constexpr std::array<TetrominoVariant, 7> tetromino_piece_types = {
     I_piece_t, J_piece_t, L_piece_t, O_piece_t,
