@@ -1,5 +1,6 @@
+#include "../headers/clear.h"
 #include "../headers/const.h"
-#include "../headers/move.h"
+#include "../headers/matrix.h"
 #include "../headers/tetromino.h"
 
 #include <SFML/Graphics.hpp>
@@ -96,6 +97,7 @@ int main() {
           matrix[c_y + offset_y][c_x + offset_x] =
               std::to_underlying(cellType::sealed);
         }
+        clearRows(matrix);
         piece = std::move(choose_random(tetromino_piece_types));
         // auto tag =
         // std::visit([](auto &&arg) -> auto { return arg.piece_tag; }, piece);
