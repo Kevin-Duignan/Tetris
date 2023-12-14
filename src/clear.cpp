@@ -9,13 +9,10 @@ void clearRows(matrixType &matrix) {
     if (shouldClear(row)) {
       return;
     }
-    std::cout << '\n';
-    std::cout << '\n';
   }
 }
 
 bool shouldClear(std::array<int, COLUMNS> row) {
-  std::cout << '\n';
   for (int number : row) {
     std::cout << number;
     if (number != 2) {
