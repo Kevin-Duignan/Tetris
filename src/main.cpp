@@ -34,10 +34,6 @@ void drawCells(sf::RenderWindow &window, matrixType matrix) {
 }
 
 int main() {
-  // EXAMPLE ONLY. Should not matter size of template int since
-  // we will be choosing blocks randomly.
-  // Tetromino<2> i_piece(I_piece_t);
-  // pieceCoords startPiece = i_piece.getBlockCoords();
 
   matrixType matrix;
   for (auto &row : matrix) {
@@ -159,7 +155,7 @@ void printGrid(matrixType matrix) {
   constexpr auto guide =
       "a b c d e f g h i j k l m n o p q r s t u v w x y z"sv;
   std::cout << "  " << guide.substr(0, matrix[0].size() * 2) << "\n";
-  for (auto i{0UL}; const auto &row : matrix) { // Debugging only!
+  for (auto i{0UL}; const auto &row : matrix) {
     std::cout << guide[i] << ' ';
     for (const auto &cell : row) {
       std::cout << cell << ' ';
