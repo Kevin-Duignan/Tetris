@@ -5,13 +5,59 @@
 #include "../headers/score.hpp"
 #include "../headers/tetromino.h"
 #include <SFML/Graphics.hpp>
+#include <cmath>
 #include <iostream>
+#include <string>
 
 using namespace std::literals;
 
 // didn't put these in const since nobody else needs them except main...
 float window_x = (CELL_SIZE + GAP) * COLUMNS + GAP + left_border + right_border;
 float window_y = (CELL_SIZE + GAP) * ROWS + GAP + top_border + bottom_border;
+
+std::tuple<sf::Text, sf::Text, sf::Text> initialise_texts() {
+  sf::Font junegull;
+  if (!junegull.loadFromFile("media/junegull.ttf")) {
+    // error...
+  }
+  sf::Text title, score_text, score_number;
+  // select the font
+  title.setFont(junegull);
+  title.setString("Tetris");
+  title.setCharacterSize(
+      floor((window_x + window_y) / 20)); // in pixels, not points!
+  title.setFillColor(sf::Color::Black);
+  title.setPosition(window_x / 2 - 90, -15);
+
+  score_text.setFont(junegull);
+  score_text.setString("Score:");
+  score_text.setCharacterSize(floor((window_x + window_y) / 20));
+
+  score_number.setFont(junegull);
+  score_number.setString("0");
+  score_text.setCharacterSize(floor((window_x + window_y) / 20));
+
+  return std::make_tuple(title, score_text, score_number);
+}
+void draw_board(sf::RenderWindow &window) {
+
+  sf::RectangleShape background(sf::Vector2f(window_x, window_y));
+  background.setFillColor(sf::Color(pastel_yellow_light));
+  window.draw(background);
+
+  sf::RectangleShape matrix_border(
+      sf::Vector2f((CELL_SIZE + GAP) * COLUMNS + GAP * 3,
+                   (CELL_SIZE + GAP) * ROWS + GAP * 3));
+  matrix_border.setPosition(left_border - GAP, top_border - GAP);
+  matrix_border.setFillColor(sf::Color(brown));
+  window.draw(matrix_border);
+
+  sf::RectangleShape matrix_background(sf::Vector2f(
+      (CELL_SIZE + GAP) * COLUMNS - GAP, (CELL_SIZE + GAP) * ROWS - GAP));
+  matrix_background.setPosition(left_border + GAP, top_border + GAP);
+  matrix_background.setFillColor(sf::Color(pastel_yellow_dark));
+  window.draw(matrix_background);
+}
 
 void drawCells(sf::RenderWindow &window, matrixType matrix) {
 
@@ -20,17 +66,6 @@ void drawCells(sf::RenderWindow &window, matrixType matrix) {
 
   sf::RectangleShape block(sf::Vector2f(CELL_SIZE, CELL_SIZE));
   block.setFillColor(sf::Color(0, 255, 0));
-
-  sf::RectangleShape background(sf::Vector2f(window_x, window_y));
-  background.setFillColor(sf::Color(pastel_yellow_light));
-  window.draw(background);
-
-  sf::RectangleShape matrix_background(sf::Vector2f(
-      (CELL_SIZE + GAP) * COLUMNS + GAP, (CELL_SIZE + GAP) * ROWS + GAP));
-  matrix_background.setPosition(left_border, top_border);
-  matrix_background.setFillColor(sf::Color(pastel_yellow_dark));
-  window.draw(matrix_background);
-
   float x = GAP + left_border, y = GAP + top_border;
 
   for (int i = 0; i < ROWS; i++) {
@@ -55,6 +90,30 @@ int main() {
   for (auto &row : matrix) {
     std::fill(row.begin(), row.end(), 0);
   }
+
+  sf::Text title, score_text, score_number;
+  sf::Font junegull;
+  if (!junegull.loadFromFile("media/junegull.ttf")) {
+    // error...
+  }
+  // select the font
+  title.setFont(junegull);
+  title.setString("Tetris");
+  title.setCharacterSize((window_x + window_y) / 20); // in pixels, not points!
+  title.setFillColor(sf::Color::Black);
+  title.setPosition(window_x / 2 - 90, -15);
+
+  score_text.setFont(junegull);
+  score_text.setString("Score:");
+  score_text.setCharacterSize((window_x + window_y) / 30);
+  score_text.setFillColor(sf::Color::Black);
+  score_text.setPosition(window_x - 190, window_y * 0.1);
+
+  score_number.setFont(junegull);
+  score_number.setString(std::to_string(score.get_total_score()));
+  score_number.setCharacterSize((window_x + window_y) / 40);
+  score_number.setFillColor(sf::Color::Black);
+  score_number.setPosition(window_x - 190, window_y * 0.1 + 40);
 
   auto isValidPosition = [&](int x, int y) {
     return (x >= 0 && x < COLUMNS && y >= 0 && y < ROWS &&
@@ -90,7 +149,12 @@ int main() {
       }
     }
     window.clear();
+    draw_board(window);
     drawCells(window, matrix);
+    window.draw(title);
+    window.draw(score_text);
+    score_number.setString(std::to_string(score.get_total_score()));
+    window.draw(score_number);
     window.display();
 
     // remove the old piece that is active
@@ -131,6 +195,7 @@ int main() {
           // left key is pressed: move our character
           offset = movePiece(matrix, start_piece, 'd', offset);
           keyClock.restart();
+          score.tick();
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) ||
                    sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
           // left key is pressed: move our character
@@ -159,7 +224,6 @@ int main() {
       clock.restart();                       // Reset the clock
       offset = movePiece(matrix, start_piece, 'd', offset);
       score.tick();
-      std::cout << score.get_total_score() << '\n';
     }
 
     // replace the moved (or not) active piece.
