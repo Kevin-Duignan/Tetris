@@ -23,7 +23,6 @@ bool shouldClear(std::array<int, COLUMNS> row) {
       return false;
     }
   }
-  std::cout << "yes";
   return true;
 }
 

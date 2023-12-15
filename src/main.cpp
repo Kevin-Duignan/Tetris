@@ -147,7 +147,6 @@ int main() {
       matrix[c_y + offset_y][c_x + offset_x] =
           std::to_underlying(cellType::active);
     }
-    // if move button clicked, try that move
   }
 }
 
