@@ -1,6 +1,8 @@
 
 #include "../headers/clear.h"
+#include "../headers/const.h"
 #include "../headers/helper.h"
+#include "../headers/matrix.h"
 #include "../headers/score.hpp"
 #include "../headers/tetromino.h"
 #include <SFML/Graphics.hpp>
@@ -19,17 +21,14 @@ int main() {
   TetrominoVariant piece = choose_random(tetromino_piece_types);
   auto start_piece = std::visit(get_block_coords, piece);
 
-  auto window =
-      sf::RenderWindow(sf::VideoMode((CELL_SIZE + GAP) * COLUMNS + GAP,
-                                     (CELL_SIZE + GAP) * ROWS + GAP),
-                       "Tetris");
+  auto window = sf::RenderWindow(sf::VideoMode(window_x, window_y), "Tetris");
   window.setFramerateLimit(144);
 
   sf::Clock clock;                      // starts the clock
-  sf::Time gameTick = sf::seconds(0.5); // game tick every 1 second
+  sf::Time gameTick = sf::seconds(0.3); // game tick every 1 second
 
-  sf::Clock keyClock;                  // starts the clock
-  sf::Time keyTick = sf::seconds(0.1); // can press a key every 0.1 seconds.
+  sf::Clock keyClock;                      // starts the clock
+  sf::Time keyTick = sf::seconds(0.00001); // can press a key every 0.1 seconds.
 
   coords offset = std::make_tuple(0, 0); // (x, y)
 
