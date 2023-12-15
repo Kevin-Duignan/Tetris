@@ -1,11 +1,15 @@
+
+#include "../headers/clear.h"
 #include "../headers/helper.h"
+#include "../headers/score.hpp"
+#include "../headers/tetromino.h"
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
 using namespace std::literals;
 
 int main() {
-
+  Score score;
   matrixType matrix;
   for (auto &row : matrix) {
     std::fill(row.begin(), row.end(), 0);
@@ -43,8 +47,7 @@ int main() {
         handle_key_presses(ev, piece, start_piece, offset, matrix);
         keyClock.restart();
       }
-    };
-
+    }
     handle_game_tick(matrix, piece, start_piece, offset, clock, keyClock,
                      keyTick, gameTick);
 

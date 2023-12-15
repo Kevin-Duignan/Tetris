@@ -5,16 +5,19 @@
 bool shouldClear(std::array<int, COLUMNS> row);
 void moveRowsDown(matrixType &matrix, int movable);
 
-void clearRows(
+int clearRows(            // clears rows, and returns how many it cleared.
     matrixType &matrix) { // consider updating so it goes from the bottom first.
   int i = 0;
+  int cleared = 0;
   for (auto &row : matrix) {
     if (shouldClear(row)) {
       std::fill(row.begin(), row.end(), 0);
       moveRowsDown(matrix, i);
+      cleared++;
     }
     i++;
   }
+  return cleared;
 }
 
 bool shouldClear(std::array<int, COLUMNS> row) {
@@ -23,7 +26,6 @@ bool shouldClear(std::array<int, COLUMNS> row) {
       return false;
     }
   }
-  std::cout << "yes";
   return true;
 }
 
