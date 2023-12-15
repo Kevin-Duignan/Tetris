@@ -1,4 +1,5 @@
 #include "../headers/clear.h"
+#include "../headers/colours.hpp"
 #include "../headers/const.h"
 #include "../headers/matrix.h"
 #include "../headers/score.hpp"
@@ -8,6 +9,10 @@
 
 using namespace std::literals;
 
+// didn't put these in const since nobody else needs them except main...
+float window_x = (CELL_SIZE + GAP) * COLUMNS + GAP + left_border + right_border;
+float window_y = (CELL_SIZE + GAP) * ROWS + GAP + top_border + bottom_border;
+
 void drawCells(sf::RenderWindow &window, matrixType matrix) {
 
   sf::RectangleShape cell(sf::Vector2f(CELL_SIZE, CELL_SIZE));
@@ -16,7 +21,18 @@ void drawCells(sf::RenderWindow &window, matrixType matrix) {
   sf::RectangleShape block(sf::Vector2f(CELL_SIZE, CELL_SIZE));
   block.setFillColor(sf::Color(0, 255, 0));
 
-  float x = GAP, y = GAP;
+  sf::RectangleShape background(sf::Vector2f(window_x, window_y));
+  background.setFillColor(sf::Color(pastel_yellow_light));
+  window.draw(background);
+
+  sf::RectangleShape matrix_background(sf::Vector2f(
+      (CELL_SIZE + GAP) * COLUMNS + GAP, (CELL_SIZE + GAP) * ROWS + GAP));
+  matrix_background.setPosition(left_border, top_border);
+  matrix_background.setFillColor(sf::Color(pastel_yellow_dark));
+  window.draw(matrix_background);
+
+  float x = GAP + left_border, y = GAP + top_border;
+
   for (int i = 0; i < ROWS; i++) {
     for (int j = 0; j < COLUMNS; j++) {
       if (matrix[i][j] == std::to_underlying(cellType::empty)) {
@@ -29,7 +45,7 @@ void drawCells(sf::RenderWindow &window, matrixType matrix) {
       x += CELL_SIZE + GAP;
     }
     y += CELL_SIZE + GAP;
-    x = GAP;
+    x = GAP + left_border;
   }
 }
 
@@ -56,10 +72,7 @@ int main() {
   TetrominoVariant piece = choose_random(tetromino_piece_types);
   auto start_piece = std::visit(get_block_coords, piece);
 
-  auto window =
-      sf::RenderWindow(sf::VideoMode((CELL_SIZE + GAP) * COLUMNS + GAP,
-                                     (CELL_SIZE + GAP) * ROWS + GAP),
-                       "CMake SFML Project");
+  auto window = sf::RenderWindow(sf::VideoMode(window_x, window_y), "Tetris");
   window.setFramerateLimit(144);
 
   sf::Clock clock;                    // starts the clock

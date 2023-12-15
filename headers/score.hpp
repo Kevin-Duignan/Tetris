@@ -1,3 +1,5 @@
+#pragma once
+
 /*
 General class order:
 Attributes
