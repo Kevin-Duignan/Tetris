@@ -25,23 +25,28 @@ void draw_cells(sf::RenderWindow &window, matrixType matrix) {
   }
 }
 
-void handle_key_presses(TetrominoVariant &piece, pieceCoords &start_piece,
-                        coords &offset, matrixType &matrix) {
-  sf::Event ev;
+void handle_key_presses(sf::Event &ev, TetrominoVariant &piece,
+                        pieceCoords &start_piece, coords &offset,
+                        matrixType &matrix) {
+  std::cout << "Handling key press\n";
   switch (ev.key.code) {
   case sf::Keyboard::D:
   case sf::Keyboard::Right:
+    std::cout << "Right key pressed\n";
     offset = movePiece(matrix, start_piece, 'r', offset);
     break;
   case sf::Keyboard::S:
   case sf::Keyboard::Down:
+    std::cout << "Down key pressed\n";
     offset = movePiece(matrix, start_piece, 'd', offset);
     break;
   case sf::Keyboard::A:
   case sf::Keyboard::Left:
+    std::cout << "Left key pressed\n";
     offset = movePiece(matrix, start_piece, 'l', offset);
     break;
   case (sf::Keyboard::Q):
+    std::cout << "Q key pressed\n";
     std::visit(rotate, piece);
     for (auto &[c_x, c_y] : std::visit(get_block_coords, piece)) {
       auto [offset_x, offset_y] = offset;
@@ -57,20 +62,29 @@ void handle_key_presses(TetrominoVariant &piece, pieceCoords &start_piece,
   }
 }
 
-void handle_game_tick(pieceCoords &start_piece, coords &offset,
-                      sf::Clock &clock, matrixType &matrix);
+void handle_game_tick(matrixType &matrix, TetrominoVariant &piece,
+                      pieceCoords &start_piece, coords &offset,
+                      sf::Clock &clock, sf::Clock &keyClock, sf::Time &keyTick,
+                      sf::Time &gameTick) {
 
-void replace_piece(pieceCoords &start_piece, coords &offset, matrixType &matrix,
-                   bool clear) {
+  if (shouldSeal(matrix, start_piece, offset) &&
+      keyClock.getElapsedTime() > keyTick) {
+    set_piece_cell_type(start_piece, offset, matrix, cellType::sealed);
+    piece = std::move(choose_random(tetromino_piece_types));
+    start_piece = std::visit(get_block_coords, piece);
+    offset = std::make_tuple(0, 0);
+  }
+  if (clock.getElapsedTime() > gameTick) { // game tick
+    clock.restart();                       // Reset the clock
+    offset = movePiece(matrix, start_piece, 'd', offset);
+  }
+}
+
+void set_piece_cell_type(pieceCoords &start_piece, coords &offset,
+                         matrixType &matrix, cellType type) {
   for (auto [c_x, c_y] : start_piece) {
     auto [offset_x, offset_y] = offset;
-    if (clear) {
-      matrix[c_y + offset_y][c_x + offset_x] =
-          std::to_underlying(cellType::empty);
-    } else {
-      matrix[c_y + offset_y][c_x + offset_x] =
-          std::to_underlying(cellType::active);
-    }
+    matrix[c_y + offset_y][c_x + offset_x] = std::to_underlying(type);
   }
 }
 

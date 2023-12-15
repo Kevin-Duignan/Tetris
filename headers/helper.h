@@ -5,15 +5,17 @@
 
 void draw_cells(sf::RenderWindow &window, matrixType matrix);
 
-void handle_key_presses(TetrominoVariant &piece, pieceCoords &start_piece,
-                        coords &offset, sf::Clock &keyClock,
+void handle_key_presses(sf::Event &ev, TetrominoVariant &piece,
+                        pieceCoords &start_piece, coords &offset,
                         matrixType &matrix);
 
-void handle_game_tick(pieceCoords &start_piece, coords &offset,
-                      sf::Clock &clock, matrixType &matrix);
+void handle_game_tick(matrixType &matrix, TetrominoVariant &piece,
+                      pieceCoords &start_piece, coords &offset,
+                      sf::Clock &clock, sf::Clock &keyClock, sf::Time &keyTick,
+                      sf::Time &gameTick);
 
-void replace_piece(pieceCoords &start_piece, coords &offset, matrixType &matrix,
-                   bool active);
+void set_piece_cell_type(pieceCoords &start_piece, coords &offset,
+                         matrixType &matrix, cellType type);
 
 bool is_valid_position(int x, int y, matrixType &matrix);
 
