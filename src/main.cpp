@@ -1,7 +1,4 @@
-#include "../headers/const.h"
 #include "../headers/helper.h"
-#include "../headers/matrix.h"
-#include "../headers/tetromino.h"
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
@@ -28,7 +25,7 @@ int main() {
   sf::Time gameTick = sf::seconds(0.5); // game tick every 1 second
 
   sf::Clock keyClock;                  // starts the clock
-  sf::Time keyTick = sf::seconds(0.3); // can press a key every 0.1 seconds.
+  sf::Time keyTick = sf::seconds(0.1); // can press a key every 0.1 seconds.
   sf::Event ev;
 
   coords offset = std::make_tuple(0, 0); // (x, y)
@@ -79,11 +76,13 @@ int main() {
             auto [offset_x, offset_y] = offset;
             int newX = c_x + offset_x;
             int newY = c_y + offset_y;
+            std::cout << newX << " " << newY << std::endl;
             if (!is_valid_position(newX, newY, matrix)) {
               std::visit(revert_rotate, piece);
             }
           }
-          
+          start_piece = std::visit(get_block_coords, piece);
+
           keyClock.restart();
         }
       }

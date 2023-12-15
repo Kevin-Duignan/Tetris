@@ -1,7 +1,6 @@
 #include "../headers/const.h"
 #include "../headers/matrix.h"
 
-
 coords movePiece(matrixType &matrix, pieceCoords piece, char direction,
                  coords offset) {
 

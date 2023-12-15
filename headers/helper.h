@@ -18,11 +18,13 @@ void replace_piece(pieceCoords &start_piece, coords &offset, matrixType &matrix,
 bool is_valid_position(int x, int y, matrixType &matrix);
 
 // Rotate lambda object for std::visit
-auto rotate = [](auto &&arg) { arg.rotate(); };
+auto rotate = [](auto &arg) { arg.rotate(); };
 
 // Revert rotate lambda when rotate is invalid
-auto revert_rotate = [](auto &&arg) { arg.revertRotate(); };
+auto revert_rotate = [](auto &arg) { arg.revertRotate(); };
 
-auto get_block_coords = [](auto &&arg) -> pieceCoords {
+auto get_block_coords = [](auto &arg) -> pieceCoords {
   return arg.getBlockCoords();
 };
+
+TetrominoVariant choose_random(std::array<TetrominoVariant, 7> pieces);

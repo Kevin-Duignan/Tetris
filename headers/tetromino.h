@@ -101,21 +101,3 @@ constexpr auto Z_piece_t = Tetromino<2>(
 constexpr std::array<TetrominoVariant, 7> tetromino_piece_types = {
     I_piece_t, J_piece_t, L_piece_t, O_piece_t,
     S_piece_t, T_piece_t, Z_piece_t};
-
-// Choosing the random tetrimino
-auto choose_random(std::array<TetrominoVariant, 7> pieces) {
-  std::random_device rd;  // a seed source for the random number engine
-  std::mt19937 gen(rd()); // mersenne_twister_engine seeded with rd()
-  std::uniform_int_distribution<> distrib(0, pieces.size() - 1);
-
-  int random_index = distrib(gen);
-  TetrominoVariant random_piece_t = pieces.at(random_index);
-  // Create a copy without knowing underlying type
-  TetrominoVariant random_piece = std::visit(
-      [](auto &&arg) -> TetrominoVariant {
-        using T = std::decay_t<decltype(arg)>;
-        return T(arg);
-      },
-      random_piece_t);
-  return random_piece;
-}

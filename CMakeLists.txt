@@ -17,11 +17,14 @@ FetchContent_Declare(SFML
     GIT_TAG 2.6.x)
     FetchContent_MakeAvailable(SFML)
 
-add_library(lib OBJECT src/move.cpp src/clear.cpp)
+add_library(lib OBJECT src/move.cpp src/clear.cpp src/helper.cpp)
+target_link_libraries(lib PRIVATE sfml-graphics)
 
 add_executable(Tetris src/main.cpp)
+target_include_directories(Tetris PRIVATE headers)
 target_link_libraries(Tetris PRIVATE sfml-graphics)
 target_link_libraries(Tetris PRIVATE lib)
+
 target_compile_features(Tetris PRIVATE cxx_std_23)
 
 

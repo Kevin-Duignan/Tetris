@@ -29,13 +29,31 @@ void handle_key_presses(TetrominoVariant &piece, pieceCoords &start_piece,
                         coords &offset, matrixType &matrix) {
   sf::Event ev;
   switch (ev.key.code) {
-  case (sf::Keyboard::D || sf::Keyboard::Right):
+  case sf::Keyboard::D:
+  case sf::Keyboard::Right:
     offset = movePiece(matrix, start_piece, 'r', offset);
-  case (sf::Keyboard::S || sf::Keyboard::Down):
+    break;
+  case sf::Keyboard::S:
+  case sf::Keyboard::Down:
     offset = movePiece(matrix, start_piece, 'd', offset);
-  case (sf::Keyboard::A || sf::Keyboard::Left):
+    break;
+  case sf::Keyboard::A:
+  case sf::Keyboard::Left:
     offset = movePiece(matrix, start_piece, 'l', offset);
-  case (sf::KeyBoard::Q):
+    break;
+  case (sf::Keyboard::Q):
+    std::visit(rotate, piece);
+    for (auto &[c_x, c_y] : std::visit(get_block_coords, piece)) {
+      auto [offset_x, offset_y] = offset;
+      int newX = c_x + offset_x;
+      int newY = c_y + offset_y;
+      if (!is_valid_position(newX, newY, matrix)) {
+        std::visit(revert_rotate, piece);
+      }
+    }
+    start_piece = std::visit(get_block_coords, piece);
+  default:
+    break;
   }
 }
 
@@ -56,8 +74,26 @@ void replace_piece(pieceCoords &start_piece, coords &offset, matrixType &matrix,
   }
 }
 
-bool isValidPosition(int x, int y, matrixType &matrix) {
+bool is_valid_position(int x, int y, matrixType &matrix) {
   return (x >= 0 && x < COLUMNS && y >= 0 && y < ROWS &&
           matrix[y][x] != std::to_underlying(cellType::active) &&
           matrix[y][x] != std::to_underlying(cellType::sealed));
+}
+
+// Choosing the random tetrimino
+TetrominoVariant choose_random(std::array<TetrominoVariant, 7> pieces) {
+  std::random_device rd;  // a seed source for the random number engine
+  std::mt19937 gen(rd()); // mersenne_twister_engine seeded with rd()
+  std::uniform_int_distribution<> distrib(0, pieces.size() - 1);
+
+  int random_index = distrib(gen);
+  TetrominoVariant random_piece_t = pieces.at(random_index);
+  // Create a copy without knowing underlying type
+  TetrominoVariant random_piece = std::visit(
+      [](auto &&arg) -> TetrominoVariant {
+        using T = std::decay_t<decltype(arg)>;
+        return T(arg);
+      },
+      random_piece_t);
+  return random_piece;
 }
