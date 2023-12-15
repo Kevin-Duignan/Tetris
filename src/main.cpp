@@ -1,8 +1,8 @@
 #include "../headers/clear.h"
 #include "../headers/const.h"
 #include "../headers/matrix.h"
+#include "../headers/score.hpp"
 #include "../headers/tetromino.h"
-
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
@@ -34,7 +34,7 @@ void drawCells(sf::RenderWindow &window, matrixType matrix) {
 }
 
 int main() {
-
+  Score score;
   matrixType matrix;
   for (auto &row : matrix) {
     std::fill(row.begin(), row.end(), 0);
@@ -93,7 +93,13 @@ int main() {
           matrix[c_y + offset_y][c_x + offset_x] =
               std::to_underlying(cellType::sealed);
         }
-        clearRows(matrix);
+        int cleared = clearRows(matrix);
+        if (cleared > 0) {
+          score.clear(cleared);
+        }
+        if (cleared == 4) {
+          score.tetris();
+        }
         piece = std::move(choose_random(tetromino_piece_types));
         // auto tag =
         // std::visit([](auto &&arg) -> auto { return arg.piece_tag; }, piece);
@@ -139,6 +145,8 @@ int main() {
     if (clock.getElapsedTime() > gameTick) { // game tick
       clock.restart();                       // Reset the clock
       offset = movePiece(matrix, start_piece, 'd', offset);
+      score.tick();
+      std::cout << score.get_total_score() << '\n';
     }
 
     // replace the moved (or not) active piece.
@@ -147,7 +155,6 @@ int main() {
       matrix[c_y + offset_y][c_x + offset_x] =
           std::to_underlying(cellType::active);
     }
-    // if move button clicked, try that move
   }
 }
 
