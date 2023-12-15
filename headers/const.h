@@ -4,5 +4,9 @@ constexpr int GAP = 4;
 constexpr int ROWS = 20;
 constexpr int COLUMNS = 12;
 constexpr int CELL_SIZE = 25;
-constexpr int left_border = 30, right_border = 200, top_border = 60,
-              bottom_border = 30;
+constexpr int LEFT_BORDER = 30, RIGHT_BORDER = 200, TOP_BORDER = 60,
+              BOTTOM_BORDER = 30;
+constexpr float WINDOW_X =
+    (CELL_SIZE + GAP) * COLUMNS + GAP + LEFT_BORDER + RIGHT_BORDER;
+constexpr float WINDOW_Y =
+    (CELL_SIZE + GAP) * ROWS + GAP + TOP_BORDER + BOTTOM_BORDER;
