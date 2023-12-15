@@ -34,6 +34,14 @@ template <std::uint8_t Orientations> struct Tetromino : public BaseTetromino {
     current_orientation = (current_orientation + 1) % Orientations;
   }
 
+  auto revertRotate() -> void {
+    if (current_orientation == 0) {
+      current_orientation = Orientations - 1;
+    } else {
+      current_orientation--;
+    }
+  }
+
   std::vector<std::tuple<std::uint8_t, std::uint8_t>> getBlockCoords() const {
     std::vector<std::tuple<std::uint8_t, std::uint8_t>> block_coords;
     for (int y = 0; y < 4; ++y) {
