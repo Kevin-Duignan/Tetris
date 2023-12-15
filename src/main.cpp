@@ -1,10 +1,7 @@
 
 #include "../headers/clear.h"
-#include "../headers/const.h"
 #include "../headers/helper.h"
-#include "../headers/matrix.h"
 #include "../headers/score.hpp"
-#include "../headers/tetromino.h"
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
@@ -21,14 +18,11 @@ int main() {
   TetrominoVariant piece = choose_random(tetromino_piece_types);
   auto start_piece = std::visit(get_block_coords, piece);
 
-  auto window = sf::RenderWindow(sf::VideoMode(window_x, window_y), "Tetris");
+  auto window = sf::RenderWindow(sf::VideoMode(WINDOW_X, WINDOW_Y), "Tetris");
   window.setFramerateLimit(144);
 
   sf::Clock clock;                      // starts the clock
   sf::Time gameTick = sf::seconds(0.3); // game tick every 1 second
-
-  sf::Clock keyClock;                      // starts the clock
-  sf::Time keyTick = sf::seconds(0.00001); // can press a key every 0.1 seconds.
 
   coords offset = std::make_tuple(0, 0); // (x, y)
 
@@ -40,15 +34,12 @@ int main() {
       if (ev.type == sf::Event::Closed) {
         window.close();
       }
-      if (ev.type == sf::Event::KeyPressed &&
-          keyClock.getElapsedTime() > keyTick) {
+      if (ev.type == sf::Event::KeyPressed) {
         std::cout << "Key pressed event triggered\n";
         handle_key_presses(ev, piece, start_piece, offset, matrix);
-        keyClock.restart();
       }
     }
-    handle_game_tick(matrix, piece, start_piece, offset, clock, keyClock,
-                     keyTick, gameTick);
+    handle_game_tick(matrix, piece, start_piece, offset, clock, gameTick);
 
     // Fill it back with new offset
     set_piece_cell_type(start_piece, offset, matrix, cellType::active);

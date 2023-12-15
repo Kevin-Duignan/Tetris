@@ -11,8 +11,7 @@ void handle_key_presses(sf::Event &ev, TetrominoVariant &piece,
 
 void handle_game_tick(matrixType &matrix, TetrominoVariant &piece,
                       pieceCoords &start_piece, coords &offset,
-                      sf::Clock &clock, sf::Clock &keyClock, sf::Time &keyTick,
-                      sf::Time &gameTick);
+                      sf::Clock &clock, sf::Time &gameTick);
 
 void set_piece_cell_type(pieceCoords &start_piece, coords &offset,
                          matrixType &matrix, cellType type);

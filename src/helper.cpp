@@ -9,17 +9,17 @@ void draw_cells(sf::RenderWindow &window, matrixType matrix) {
   sf::RectangleShape block(sf::Vector2f(CELL_SIZE, CELL_SIZE));
   block.setFillColor(sf::Color(0, 255, 0));
 
-  sf::RectangleShape background(sf::Vector2f(window_x, window_y));
+  sf::RectangleShape background(sf::Vector2f(WINDOW_X, WINDOW_Y));
   background.setFillColor(sf::Color(pastel_yellow_light));
   window.draw(background);
 
   sf::RectangleShape matrix_background(sf::Vector2f(
       (CELL_SIZE + GAP) * COLUMNS + GAP, (CELL_SIZE + GAP) * ROWS + GAP));
-  matrix_background.setPosition(left_border, top_border);
+  matrix_background.setPosition(LEFT_BORDER, TOP_BORDER);
   matrix_background.setFillColor(sf::Color(pastel_yellow_dark));
   window.draw(matrix_background);
 
-  float x = GAP + left_border, y = GAP + top_border;
+  float x = GAP + LEFT_BORDER, y = GAP + TOP_BORDER;
 
   for (int i = 0; i < ROWS; i++) {
     for (int j = 0; j < COLUMNS; j++) {
@@ -33,7 +33,7 @@ void draw_cells(sf::RenderWindow &window, matrixType matrix) {
       x += CELL_SIZE + GAP;
     }
     y += CELL_SIZE + GAP;
-    x = GAP + left_border;
+    x = GAP + LEFT_BORDER;
   }
 }
 
@@ -76,11 +76,9 @@ void handle_key_presses(sf::Event &ev, TetrominoVariant &piece,
 
 void handle_game_tick(matrixType &matrix, TetrominoVariant &piece,
                       pieceCoords &start_piece, coords &offset,
-                      sf::Clock &clock, sf::Clock &keyClock, sf::Time &keyTick,
-                      sf::Time &gameTick) {
+                      sf::Clock &clock, sf::Time &gameTick) {
 
-  if (shouldSeal(matrix, start_piece, offset) &&
-      keyClock.getElapsedTime() > keyTick) {
+  if (shouldSeal(matrix, start_piece, offset)) {
     set_piece_cell_type(start_piece, offset, matrix, cellType::sealed);
     piece = std::move(choose_random(tetromino_piece_types));
     start_piece = std::visit(get_block_coords, piece);
