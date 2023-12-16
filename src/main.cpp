@@ -1,6 +1,6 @@
 
-#include "../headers/clear.h"
-#include "../headers/helper.h"
+#include "../headers/clear.hpp"
+#include "../headers/game.hpp"
 #include "../headers/score.hpp"
 #include <SFML/Graphics.hpp>
 #include <iostream>

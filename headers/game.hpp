@@ -1,6 +1,8 @@
-#include "const.h"
-#include "matrix.h"
-#include "tetromino.h"
+#pragma once
+
+#include "const.hpp"
+#include "matrix.hpp"
+#include "tetromino.hpp"
 #include <SFML/Graphics.hpp>
 
 void draw_cells(sf::RenderWindow &window, matrixType matrix);

@@ -1,4 +1,4 @@
-#include "../headers/helper.h"
+#include "../headers/game.hpp"
 #include "../headers/colours.hpp"
 
 void draw_cells(sf::RenderWindow &window, matrixType matrix) {

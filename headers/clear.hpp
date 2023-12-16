@@ -1,5 +1,4 @@
 #pragma once
 
-#include "const.h"
-#include "matrix.h"
+#include "matrix.hpp"
 int clear_rows(matrixType &matrix);

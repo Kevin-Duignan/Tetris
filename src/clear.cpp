@@ -1,5 +1,4 @@
-#include "../headers/clear.h"
-#include "../headers/const.h"
+#include "../headers/clear.hpp"
 #include <iostream>
 
 bool shouldClear(std::array<int, COLUMNS> row);
