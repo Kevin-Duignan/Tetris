@@ -40,25 +40,22 @@ void draw_cells(sf::RenderWindow &window, matrixType matrix) {
 void handle_key_presses(sf::Event &ev, TetrominoVariant &piece,
                         pieceCoords &start_piece, coords &offset,
                         matrixType &matrix) {
-  std::cout << "Handling key press\n";
+  // Declaration here to prevent "jump bypasses variable initialisation" error
+  bool valid_rotation = true;
   switch (ev.key.code) {
   case sf::Keyboard::D:
   case sf::Keyboard::Right:
-    std::cout << "Right key pressed\n";
     offset = movePiece(matrix, start_piece, 'r', offset);
     break;
   case sf::Keyboard::S:
   case sf::Keyboard::Down:
-    std::cout << "Down key pressed\n";
     offset = movePiece(matrix, start_piece, 'd', offset);
     break;
   case sf::Keyboard::A:
   case sf::Keyboard::Left:
-    std::cout << "Left key pressed\n";
     offset = movePiece(matrix, start_piece, 'l', offset);
     break;
   case (sf::Keyboard::Q):
-    std::cout << "Q key pressed\n";
     std::visit([](auto &arg) { arg.rotate(); }, piece);
     for (auto &[c_x, c_y] : std::visit(
              [](auto &arg) -> pieceCoords { return arg.getBlockCoords(); },
@@ -67,11 +64,16 @@ void handle_key_presses(sf::Event &ev, TetrominoVariant &piece,
       int newX = c_x + offset_x;
       int newY = c_y + offset_y;
       if (!is_valid_position(newX, newY, matrix)) {
-        std::visit([](auto &arg) { arg.revertRotate(); }, piece);
+        valid_rotation = false;
+        break;
       }
     }
-    start_piece = std::visit(
-        [](auto &arg) -> pieceCoords { return arg.getBlockCoords(); }, piece);
+    if (!valid_rotation) {
+      std::visit([](auto &arg) { arg.revertRotate(); }, piece);
+    } else {
+      start_piece = std::visit(
+          [](auto &arg) -> pieceCoords { return arg.getBlockCoords(); }, piece);
+    }
     break;
   default:
     break;
