@@ -1,6 +1,12 @@
 #include "../headers/game.hpp"
 #include "../headers/colours.hpp"
 
+// Debug
+void print_coords(const coords &c) {
+  std::cout << "(" << static_cast<int>(std::get<0>(c)) << ", "
+            << static_cast<int>(std::get<1>(c)) << ")";
+}
+
 void draw_cells(sf::RenderWindow &window, matrixType matrix) {
 
   sf::RectangleShape cell(sf::Vector2f(CELL_SIZE, CELL_SIZE));
@@ -42,19 +48,30 @@ void handle_key_presses(sf::Event &ev, TetrominoVariant &piece,
                         matrixType &matrix) {
   // Declaration here to prevent "jump bypasses variable initialisation" error
   bool valid_rotation = true;
+  coords prev_offset;
+  coords curr_offset;
   switch (ev.key.code) {
   case sf::Keyboard::D:
   case sf::Keyboard::Right:
-    offset = movePiece(matrix, start_piece, 'r', offset);
+    movePiece(matrix, start_piece, 'r', offset);
     break;
   case sf::Keyboard::S:
   case sf::Keyboard::Down:
-    offset = movePiece(matrix, start_piece, 'd', offset);
+    movePiece(matrix, start_piece, 'd', offset);
     break;
   case sf::Keyboard::A:
   case sf::Keyboard::Left:
-    offset = movePiece(matrix, start_piece, 'l', offset);
+    movePiece(matrix, start_piece, 'l', offset);
     break;
+  case sf::Keyboard::Space:
+    do {
+      movePiece(matrix, start_piece, 'd', offset);
+      prev_offset = offset;
+      movePiece(matrix, start_piece, 'd', offset);
+      curr_offset = offset;
+    } while (prev_offset != curr_offset);
+    break;
+    offset = curr_offset;
   case (sf::Keyboard::Q):
     std::visit([](auto &arg) { arg.rotate(); }, piece);
     for (auto &[c_x, c_y] : std::visit(
@@ -93,7 +110,7 @@ void handle_game_tick(matrixType &matrix, TetrominoVariant &piece,
   }
   if (clock.getElapsedTime() > gameTick) { // game tick
     clock.restart();                       // Reset the clock
-    offset = movePiece(matrix, start_piece, 'd', offset);
+    movePiece(matrix, start_piece, 'd', offset);
   }
 }
 
