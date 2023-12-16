@@ -65,7 +65,21 @@ void handle_key_presses(sf::Event &ev, TetrominoVariant &piece,
   case sf::Keyboard::Left:
     movePiece(matrix, start_piece, 'l', offset);
     break;
-
+  case sf::Keyboard::Space:
+    do {
+      movePiece(matrix, start_piece, 'd', offset);
+      prev_offset = offset;
+      movePiece(matrix, start_piece, 'd', offset);
+      curr_offset = offset;
+      std::cout << "prev_offset: ";
+      print_coords(prev_offset);
+      std::cout << "\n";
+      std::cout << "curr_offset: ";
+      print_coords(curr_offset);
+      std::cout << "\n";
+    } while (prev_offset != curr_offset);
+    break;
+    offset = curr_offset;
   case (sf::Keyboard::Q):
     std::visit([](auto &arg) { arg.rotate(); }, piece);
     for (auto &[c_x, c_y] : std::visit(
