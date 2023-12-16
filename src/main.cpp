@@ -23,7 +23,7 @@ int main() {
   window.setFramerateLimit(144);
 
   sf::Clock clock;                      // starts the clock
-  sf::Time gameTick = sf::seconds(0.3); // game tick every 1 second
+  sf::Time gameTick = sf::seconds(0.7); // game tick every 1 second
 
   coords offset = std::make_tuple(0, 0); // (x, y)
 
@@ -36,7 +36,6 @@ int main() {
         window.close();
       }
       if (ev.type == sf::Event::KeyPressed) {
-        std::cout << "Key pressed event triggered\n";
         handle_key_presses(ev, piece, start_piece, offset, matrix);
       }
     }
