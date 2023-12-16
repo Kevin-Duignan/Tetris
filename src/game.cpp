@@ -1,7 +1,7 @@
 #include "../headers/game.hpp"
 #include "../headers/colours.hpp"
-#
 
+// Debug
 void print_coords(const coords &c) {
   std::cout << "(" << static_cast<int>(std::get<0>(c)) << ", "
             << static_cast<int>(std::get<1>(c)) << ")";
@@ -58,8 +58,6 @@ void handle_key_presses(sf::Event &ev, TetrominoVariant &piece,
   case sf::Keyboard::S:
   case sf::Keyboard::Down:
     movePiece(matrix, start_piece, 'd', offset);
-    std::cout << "prev_offset: ";
-    print_coords(offset);
     break;
   case sf::Keyboard::A:
   case sf::Keyboard::Left:
@@ -71,12 +69,6 @@ void handle_key_presses(sf::Event &ev, TetrominoVariant &piece,
       prev_offset = offset;
       movePiece(matrix, start_piece, 'd', offset);
       curr_offset = offset;
-      std::cout << "prev_offset: ";
-      print_coords(prev_offset);
-      std::cout << "\n";
-      std::cout << "curr_offset: ";
-      print_coords(curr_offset);
-      std::cout << "\n";
     } while (prev_offset != curr_offset);
     break;
     offset = curr_offset;
@@ -116,10 +108,10 @@ void handle_game_tick(matrixType &matrix, TetrominoVariant &piece,
         [](auto &arg) -> pieceCoords { return arg.getBlockCoords(); }, piece);
     offset = std::make_tuple(0, 0);
   }
-  // if (clock.getElapsedTime() > gameTick) { // game tick
-  //   clock.restart();                       // Reset the clock
-  //   offset = movePiece(matrix, start_piece, 'd', offset);
-  // }
+  if (clock.getElapsedTime() > gameTick) { // game tick
+    clock.restart();                       // Reset the clock
+    movePiece(matrix, start_piece, 'd', offset);
+  }
 }
 
 void set_piece_cell_type(pieceCoords &start_piece, coords &offset,
