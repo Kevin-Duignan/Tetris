@@ -2,4 +2,4 @@
 
 #include "const.h"
 #include "matrix.h"
-int clearRows(matrixType &matrix);
+int clear_rows(matrixType &matrix);
