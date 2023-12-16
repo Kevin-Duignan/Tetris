@@ -40,6 +40,7 @@ int main() {
       }
     }
     handle_game_tick(matrix, piece, start_piece, offset, clock, gameTick);
+    clear_rows(matrix);
     // Fill it back with new offset
     set_piece_cell_type(start_piece, offset, matrix, cellType::active);
 
