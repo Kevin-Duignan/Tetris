@@ -40,21 +40,17 @@ void draw_cells(sf::RenderWindow &window, matrixType matrix) {
 void handle_key_presses(sf::Event &ev, TetrominoVariant &piece,
                         pieceCoords &start_piece, coords &offset,
                         matrixType &matrix) {
-  std::cout << "Handling key press\n";
   switch (ev.key.code) {
   case sf::Keyboard::D:
   case sf::Keyboard::Right:
-    std::cout << "Right key pressed\n";
     offset = movePiece(matrix, start_piece, 'r', offset);
     break;
   case sf::Keyboard::S:
   case sf::Keyboard::Down:
-    std::cout << "Down key pressed\n";
     offset = movePiece(matrix, start_piece, 'd', offset);
     break;
   case sf::Keyboard::A:
   case sf::Keyboard::Left:
-    std::cout << "Left key pressed\n";
     offset = movePiece(matrix, start_piece, 'l', offset);
     break;
   case (sf::Keyboard::Q):
