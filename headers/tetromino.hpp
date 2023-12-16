@@ -7,7 +7,6 @@
 #include <random>
 #include <tuple>
 #include <variant>
-#include <vector>
 
 struct BaseTetromino {
   enum class piece_tag_t : short { I, J, L, O, S, T, Z };

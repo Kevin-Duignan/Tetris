@@ -1,11 +1,10 @@
-#include "../headers/clear.h"
-#include "../headers/const.h"
+#include "../headers/clear.hpp"
 #include <iostream>
 
 bool shouldClear(std::array<int, COLUMNS> row);
 void moveRowsDown(matrixType &matrix, int movable);
 
-int clearRows(            // clears rows, and returns how many it cleared.
+int clear_rows(           // clears rows, and returns how many it cleared.
     matrixType &matrix) { // consider updating so it goes from the bottom first.
   int i = 0;
   int cleared = 0;

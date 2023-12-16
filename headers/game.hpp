@@ -1,6 +1,8 @@
-#include "const.h"
-#include "matrix.h"
-#include "tetromino.h"
+#pragma once
+
+#include "const.hpp"
+#include "matrix.hpp"
+#include "tetromino.hpp"
 #include <SFML/Graphics.hpp>
 
 void draw_cells(sf::RenderWindow &window, matrixType matrix);
@@ -18,14 +20,5 @@ void set_piece_cell_type(pieceCoords &start_piece, coords &offset,
 
 bool is_valid_position(int x, int y, matrixType &matrix);
 
-// Rotate lambda object for std::visit
-auto rotate = [](auto &arg) { arg.rotate(); };
-
-// Revert rotate lambda when rotate is invalid
-auto revert_rotate = [](auto &arg) { arg.revertRotate(); };
-
-auto get_block_coords = [](auto &arg) -> pieceCoords {
-  return arg.getBlockCoords();
-};
 
 TetrominoVariant choose_random(std::array<TetrominoVariant, 7> pieces);

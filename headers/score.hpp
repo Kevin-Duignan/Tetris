@@ -9,7 +9,7 @@ Getters / Setters
 Destructor
 */
 
-#include "../headers/const.h"
+#include "../headers/const.hpp"
 #include <cmath>
 
 class Score {

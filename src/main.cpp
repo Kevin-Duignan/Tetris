@@ -1,6 +1,6 @@
 
-#include "../headers/clear.h"
-#include "../headers/helper.h"
+#include "../headers/clear.hpp"
+#include "../headers/game.hpp"
 #include "../headers/score.hpp"
 #include <SFML/Graphics.hpp>
 #include <iostream>
@@ -16,7 +16,8 @@ int main() {
 
   //  std::variant<Tetromino<1>, Tetromino<2>, Tetromino<4>>;
   TetrominoVariant piece = choose_random(tetromino_piece_types);
-  auto start_piece = std::visit(get_block_coords, piece);
+  auto start_piece = std::visit(
+      [](auto &arg) -> pieceCoords { return arg.getBlockCoords(); }, piece);
 
   auto window = sf::RenderWindow(sf::VideoMode(WINDOW_X, WINDOW_Y), "Tetris");
   window.setFramerateLimit(144);
@@ -40,7 +41,7 @@ int main() {
       }
     }
     handle_game_tick(matrix, piece, start_piece, offset, clock, gameTick);
-
+    clear_rows(matrix);
     // Fill it back with new offset
     set_piece_cell_type(start_piece, offset, matrix, cellType::active);
 
