@@ -1,7 +1,7 @@
 #include "../headers/matrix.hpp"
 
-coords movePiece(matrixType &matrix, pieceCoords piece, char direction,
-                 coords offset) {
+void movePiece(matrixType &matrix, pieceCoords piece, char direction,
+               coords &offset) {
 
   // Function to check if the new position is valid
   auto isValidPosition = [&](int x, int y) { // lambda!
@@ -18,10 +18,10 @@ coords movePiece(matrixType &matrix, pieceCoords piece, char direction,
       int newX = c_x + offset_x - 1;
       int newY = c_y + offset_y;
       if (!isValidPosition(newX, newY)) {
-        return offset; // Can't move left
+        return; // Can't move left
       }
     }
-    return std::make_tuple(offset_x - 1, offset_y);
+    offset = std::make_tuple(offset_x - 1, offset_y);
   }
 
   // Move piece down
@@ -30,10 +30,10 @@ coords movePiece(matrixType &matrix, pieceCoords piece, char direction,
       int newX = c_x + offset_x;
       int newY = c_y + offset_y + 1;
       if (!isValidPosition(newX, newY)) {
-        return offset; // Can't move down
+        return; // Can't move down
       }
     }
-    return std::make_tuple(offset_x, offset_y + 1);
+    offset = std::make_tuple(offset_x, offset_y + 1);
   }
 
   // Move piece right
@@ -42,12 +42,11 @@ coords movePiece(matrixType &matrix, pieceCoords piece, char direction,
       int newX = c_x + offset_x + 1;
       int newY = c_y + offset_y;
       if (!isValidPosition(newX, newY)) {
-        return offset; // Can't move right
+        return; // Can't move right
       }
     }
-    return std::make_tuple(offset_x + 1, offset_y);
+    offset = std::make_tuple(offset_x + 1, offset_y);
   }
-  return offset;
 }
 
 bool shouldSeal(matrixType matrix, pieceCoords piece, coords offset) {
