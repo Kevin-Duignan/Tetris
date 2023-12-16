@@ -59,16 +59,20 @@ void handle_key_presses(sf::Event &ev, TetrominoVariant &piece,
     break;
   case (sf::Keyboard::Q):
     std::cout << "Q key pressed\n";
-    std::visit(rotate, piece);
-    for (auto &[c_x, c_y] : std::visit(get_block_coords, piece)) {
+    std::visit([](auto &arg) { arg.rotate(); }, piece);
+    for (auto &[c_x, c_y] : std::visit(
+             [](auto &arg) -> pieceCoords { return arg.getBlockCoords(); },
+             piece)) {
       auto [offset_x, offset_y] = offset;
       int newX = c_x + offset_x;
       int newY = c_y + offset_y;
       if (!is_valid_position(newX, newY, matrix)) {
-        std::visit(revert_rotate, piece);
+        std::visit([](auto &arg) { arg.revertRotate(); }, piece);
       }
     }
-    start_piece = std::visit(get_block_coords, piece);
+    start_piece = std::visit(
+        [](auto &arg) -> pieceCoords { return arg.getBlockCoords(); }, piece);
+    break;
   default:
     break;
   }
@@ -81,7 +85,8 @@ void handle_game_tick(matrixType &matrix, TetrominoVariant &piece,
   if (shouldSeal(matrix, start_piece, offset)) {
     set_piece_cell_type(start_piece, offset, matrix, cellType::sealed);
     piece = std::move(choose_random(tetromino_piece_types));
-    start_piece = std::visit(get_block_coords, piece);
+    start_piece = std::visit(
+        [](auto &arg) -> pieceCoords { return arg.getBlockCoords(); }, piece);
     offset = std::make_tuple(0, 0);
   }
   if (clock.getElapsedTime() > gameTick) { // game tick

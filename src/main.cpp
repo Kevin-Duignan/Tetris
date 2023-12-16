@@ -16,7 +16,8 @@ int main() {
 
   //  std::variant<Tetromino<1>, Tetromino<2>, Tetromino<4>>;
   TetrominoVariant piece = choose_random(tetromino_piece_types);
-  auto start_piece = std::visit(get_block_coords, piece);
+  auto start_piece = std::visit(
+      [](auto &arg) -> pieceCoords { return arg.getBlockCoords(); }, piece);
 
   auto window = sf::RenderWindow(sf::VideoMode(WINDOW_X, WINDOW_Y), "Tetris");
   window.setFramerateLimit(144);
