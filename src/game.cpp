@@ -60,6 +60,7 @@ void handle_key_presses(sf::Event &ev, TetrominoVariant &piece,
   case (sf::Keyboard::Q):
     std::cout << "Q key pressed\n";
     std::visit([](auto &arg) { arg.rotate(); }, piece);
+    bool valid_rotation = true;
     for (auto &[c_x, c_y] : std::visit(
              [](auto &arg) -> pieceCoords { return arg.getBlockCoords(); },
              piece)) {
@@ -67,12 +68,16 @@ void handle_key_presses(sf::Event &ev, TetrominoVariant &piece,
       int newX = c_x + offset_x;
       int newY = c_y + offset_y;
       if (!is_valid_position(newX, newY, matrix)) {
-        std::visit([](auto &arg) { arg.revertRotate(); }, piece);
+        valid_rotation = false;
+        break;
       }
     }
-    start_piece = std::visit(
-        [](auto &arg) -> pieceCoords { return arg.getBlockCoords(); }, piece);
-    break;
+    if (!valid_rotation) {
+      std::visit([](auto &arg) { arg.revertRotate(); }, piece);
+    } else {
+      start_piece = std::visit(
+          [](auto &arg) -> pieceCoords { return arg.getBlockCoords(); }, piece);
+    }
   default:
     break;
   }
