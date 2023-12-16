@@ -72,7 +72,7 @@ void drawCells(sf::RenderWindow &window, matrixType matrix) {
     for (int j = 0; j < COLUMNS; j++) {
       if (matrix[i][j] == std::to_underlying(cellType::empty)) {
         cell.setPosition(x, y);
-        window.draw(cell);
+        // window.draw(cell);
       } else { // there is a block in that spot
         block.setPosition(x, y);
         window.draw(block);
