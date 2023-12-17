@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../headers/colours.hpp"
-#include <algorithm> 
+#include <algorithm>
 #include <array>
 #include <bitset>
 #include <iostream>
@@ -90,7 +90,7 @@ constexpr auto S_piece_t = Tetromino<2>(
 
 constexpr auto T_piece_t = Tetromino<4>(
     BaseTetromino::piece_tag_t::T,
-    Tetromino<4>::piece_type{0b0000000000100111, 0b0000010001100100,
+    Tetromino<4>::piece_type{0b0000000000100111, 0b0000001000110010,
                              0b0000011100100000, 0b0000000100110001},
     PINK);
 
