@@ -6,7 +6,25 @@ void print_coords(const coords &c) {
   std::cout << "(" << static_cast<int>(std::get<0>(c)) << ", "
             << static_cast<int>(std::get<1>(c)) << ")";
 }
+void draw_board(sf::RenderWindow &window) {
 
+  sf::RectangleShape background(sf::Vector2f(WINDOW_X, WINDOW_Y));
+  background.setFillColor(sf::Color(pastel_yellow_light));
+  window.draw(background);
+
+  sf::RectangleShape matrix_border(
+      sf::Vector2f((CELL_SIZE + GAP) * COLUMNS + GAP * 3,
+                   (CELL_SIZE + GAP) * ROWS + GAP * 3));
+  matrix_border.setPosition(LEFT_BORDER - GAP, TOP_BORDER - GAP);
+  matrix_border.setFillColor(sf::Color(brown));
+  window.draw(matrix_border);
+
+  sf::RectangleShape matrix_background(sf::Vector2f(
+      (CELL_SIZE + GAP) * COLUMNS - GAP, (CELL_SIZE + GAP) * ROWS - GAP));
+  matrix_background.setPosition(LEFT_BORDER + GAP, TOP_BORDER + GAP);
+  matrix_background.setFillColor(sf::Color(pastel_yellow_dark));
+  window.draw(matrix_background);
+}
 void draw_cells(sf::RenderWindow &window, matrixType matrix) {
 
   sf::RectangleShape cell(sf::Vector2f(CELL_SIZE, CELL_SIZE));
@@ -31,7 +49,7 @@ void draw_cells(sf::RenderWindow &window, matrixType matrix) {
     for (int j = 0; j < COLUMNS; j++) {
       if (matrix[i][j] == std::to_underlying(cellType::empty)) {
         cell.setPosition(x, y);
-        window.draw(cell);
+        // window.draw(cell);
       } else { // there is a block in that spot
         block.setPosition(x, y);
         window.draw(block);
@@ -45,7 +63,7 @@ void draw_cells(sf::RenderWindow &window, matrixType matrix) {
 
 void handle_key_presses(sf::Event &ev, TetrominoVariant &piece,
                         pieceCoords &start_piece, coords &offset,
-                        matrixType &matrix) {
+                        matrixType &matrix, Score &score) {
   // Declaration here to prevent "jump bypasses variable initialisation" error
   bool valid_rotation = true;
   coords prev_offset;
@@ -58,6 +76,7 @@ void handle_key_presses(sf::Event &ev, TetrominoVariant &piece,
   case sf::Keyboard::S:
   case sf::Keyboard::Down:
     movePiece(matrix, start_piece, 'd', offset);
+    score.tick();
     break;
   case sf::Keyboard::A:
   case sf::Keyboard::Left:
@@ -99,18 +118,19 @@ void handle_key_presses(sf::Event &ev, TetrominoVariant &piece,
 
 void handle_game_tick(matrixType &matrix, TetrominoVariant &piece,
                       pieceCoords &start_piece, coords &offset,
-                      sf::Clock &clock, sf::Time &gameTick) {
+                      sf::Clock &clock, sf::Time &gameTick, Score &score) {
 
   if (shouldSeal(matrix, start_piece, offset)) {
     set_piece_cell_type(start_piece, offset, matrix, cellType::sealed);
     piece = std::move(choose_random(tetromino_piece_types));
     start_piece = std::visit(
         [](auto &arg) -> pieceCoords { return arg.getBlockCoords(); }, piece);
-    offset = std::make_tuple(0, 0);
+    offset = std::make_tuple(floor(COLUMNS / 2) - 2, 0);
   }
   if (clock.getElapsedTime() > gameTick) { // game tick
     clock.restart();                       // Reset the clock
     movePiece(matrix, start_piece, 'd', offset);
+    score.tick();
   }
 }
 
