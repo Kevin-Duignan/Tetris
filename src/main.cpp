@@ -76,11 +76,16 @@ int main() {
     set_piece_cell_type(start_piece, offset, matrix, cellType::active);
 
     window.clear();
-    draw_cells(window, matrix);
+
+    // Drawing components
+    auto [r, g, b] =
+        std::visit([](auto &arg) -> auto { return arg.piece_colour; }, piece);
+    draw_cells(window, matrix, sf::Color(r, g, b));
     window.draw(title);
     window.draw(score_text);
     score_number.setString(std::to_string(score.get_total_score()));
     window.draw(score_number);
+
     window.display();
   }
 }

@@ -6,6 +6,7 @@ void print_coords(const coords &c) {
   std::cout << "(" << static_cast<int>(std::get<0>(c)) << ", "
             << static_cast<int>(std::get<1>(c)) << ")";
 }
+
 void draw_board(sf::RenderWindow &window) {
 
   sf::RectangleShape background(sf::Vector2f(WINDOW_X, WINDOW_Y));
@@ -25,13 +26,15 @@ void draw_board(sf::RenderWindow &window) {
   matrix_background.setFillColor(sf::Color(PASTEL_YELLOW_DARK));
   window.draw(matrix_background);
 }
-void draw_cells(sf::RenderWindow &window, matrixType matrix) {
+
+void draw_cells(sf::RenderWindow &window, matrixType matrix,
+                sf::Color piece_colour) {
 
   sf::RectangleShape cell(sf::Vector2f(CELL_SIZE, CELL_SIZE));
   cell.setFillColor(sf::Color(180, 50, 20));
 
   sf::RectangleShape block(sf::Vector2f(CELL_SIZE, CELL_SIZE));
-  block.setFillColor(sf::Color(0, 255, 0));
+  block.setFillColor(piece_colour);
 
   sf::RectangleShape background(sf::Vector2f(WINDOW_X, WINDOW_Y));
   background.setFillColor(sf::Color(PASTEL_YELLOW_LIGHT));

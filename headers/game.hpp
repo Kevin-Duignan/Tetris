@@ -6,7 +6,8 @@
 #include "tetromino.hpp"
 #include <SFML/Graphics.hpp>
 
-void draw_cells(sf::RenderWindow &window, matrixType matrix);
+void draw_cells(sf::RenderWindow &window, matrixType matrix,
+                sf::Color piece_colour);
 
 void handle_key_presses(sf::Event &ev, TetrominoVariant &piece,
                         pieceCoords &start_piece, coords &offset,

@@ -9,7 +9,8 @@
 #include <tuple>
 #include <variant>
 struct BaseTetromino {
-  enum class piece_tag_t : short { I, J, L, O, S, T, Z };
+  // Enum start at 10 to not conflict with other enum class values
+  enum class piece_tag_t : short { I = 10, J, L, O, S, T, Z };
 
   constexpr explicit BaseTetromino(piece_tag_t tag) : piece_tag(tag) {}
 
@@ -102,3 +103,12 @@ constexpr auto Z_piece_t = Tetromino<2>(
 constexpr std::array<TetrominoVariant, 7> tetromino_piece_types = {
     I_piece_t, J_piece_t, L_piece_t, O_piece_t,
     S_piece_t, T_piece_t, Z_piece_t};
+
+constexpr std::map<BaseTetromino::piece_tag_t, RGB> PIECE_COLOURS_MAP = {
+    {BaseTetromino::piece_tag_t::GREEN, GREEN},
+    {BaseTetromino::piece_tag_t::BLUE, BLUE},
+    {BaseTetromino::piece_tag_t::PURPLE, PURPLE},
+    {BaseTetromino::piece_tag_t::RED, RED},
+    {BaseTetromino::piece_tag_t::ORANGE, ORANGE},
+    {BaseTetromino::piece_tag_t::PINK, PINK},
+    {BaseTetromino::piece_tag_t::CYAN, CYAN}};
