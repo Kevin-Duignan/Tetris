@@ -7,7 +7,6 @@
 #include <random>
 #include <tuple>
 #include <variant>
-#include <vector>
 
 struct BaseTetromino {
   enum class piece_tag_t : short { I, J, L, O, S, T, Z };
@@ -32,6 +31,14 @@ template <std::uint8_t Orientations> struct Tetromino : public BaseTetromino {
 
   auto rotate() -> void {
     current_orientation = (current_orientation + 1) % Orientations;
+  }
+
+  auto revertRotate() -> void {
+    if (current_orientation == 0) {
+      current_orientation = Orientations - 1;
+    } else {
+      current_orientation--;
+    }
   }
 
   std::vector<std::tuple<std::uint8_t, std::uint8_t>> getBlockCoords() const {
@@ -60,7 +67,7 @@ template <std::uint8_t Orientations> struct Tetromino : public BaseTetromino {
 using TetrominoVariant = std::variant<Tetromino<1>, Tetromino<2>, Tetromino<4>>;
 constexpr auto I_piece_t = Tetromino<2>(
     BaseTetromino::piece_tag_t::I,
-    Tetromino<2>::piece_type{0b0000000000001111, 0b0001000100010001});
+    Tetromino<2>::piece_type{0b0000000011110000, 0b0001000100010001});
 
 constexpr auto J_piece_t = Tetromino<4>(
     BaseTetromino::piece_tag_t::J,
@@ -93,21 +100,3 @@ constexpr auto Z_piece_t = Tetromino<2>(
 constexpr std::array<TetrominoVariant, 7> tetromino_piece_types = {
     I_piece_t, J_piece_t, L_piece_t, O_piece_t,
     S_piece_t, T_piece_t, Z_piece_t};
-
-// Choosing the random tetrimino
-auto choose_random(std::array<TetrominoVariant, 7> pieces) {
-  std::random_device rd;  // a seed source for the random number engine
-  std::mt19937 gen(rd()); // mersenne_twister_engine seeded with rd()
-  std::uniform_int_distribution<> distrib(0, pieces.size() - 1);
-
-  int random_index = distrib(gen);
-  TetrominoVariant random_piece_t = pieces.at(random_index);
-  // Create a copy without knowing underlying type
-  TetrominoVariant random_piece = std::visit(
-      [](auto &&arg) -> TetrominoVariant {
-        using T = std::decay_t<decltype(arg)>;
-        return T(arg);
-      },
-      random_piece_t);
-  return random_piece;
-}

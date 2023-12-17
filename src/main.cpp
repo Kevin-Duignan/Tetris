@@ -1,64 +1,13 @@
-#include "../headers/clear.h"
-#include "../headers/colours.hpp"
-#include "../headers/const.h"
-#include "../headers/matrix.h"
+
+#include "../headers/clear.hpp"
+#include "../headers/game.hpp"
 #include "../headers/score.hpp"
-#include "../headers/tetromino.h"
 #include <SFML/Graphics.hpp>
 #include <cmath>
 #include <iostream>
 #include <string>
 
 using namespace std::literals;
-
-// didn't put these in const since nobody else needs them except main...
-float window_x = (CELL_SIZE + GAP) * COLUMNS + GAP + left_border + right_border;
-float window_y = (CELL_SIZE + GAP) * ROWS + GAP + top_border + bottom_border;
-
-void draw_board(sf::RenderWindow &window) {
-
-  sf::RectangleShape background(sf::Vector2f(window_x, window_y));
-  background.setFillColor(sf::Color(pastel_yellow_light));
-  window.draw(background);
-
-  sf::RectangleShape matrix_border(
-      sf::Vector2f((CELL_SIZE + GAP) * COLUMNS + GAP * 3,
-                   (CELL_SIZE + GAP) * ROWS + GAP * 3));
-  matrix_border.setPosition(left_border - GAP, top_border - GAP);
-  matrix_border.setFillColor(sf::Color(brown));
-  window.draw(matrix_border);
-
-  sf::RectangleShape matrix_background(sf::Vector2f(
-      (CELL_SIZE + GAP) * COLUMNS - GAP, (CELL_SIZE + GAP) * ROWS - GAP));
-  matrix_background.setPosition(left_border + GAP, top_border + GAP);
-  matrix_background.setFillColor(sf::Color(pastel_yellow_dark));
-  window.draw(matrix_background);
-}
-
-void drawCells(sf::RenderWindow &window, matrixType matrix) {
-
-  sf::RectangleShape cell(sf::Vector2f(CELL_SIZE, CELL_SIZE));
-  cell.setFillColor(sf::Color(180, 50, 20));
-
-  sf::RectangleShape block(sf::Vector2f(CELL_SIZE, CELL_SIZE));
-  block.setFillColor(sf::Color(0, 255, 0));
-  float x = GAP + left_border, y = GAP + top_border;
-
-  for (int i = 0; i < ROWS; i++) {
-    for (int j = 0; j < COLUMNS; j++) {
-      if (matrix[i][j] == std::to_underlying(cellType::empty)) {
-        cell.setPosition(x, y);
-        // window.draw(cell);
-      } else { // there is a block in that spot
-        block.setPosition(x, y);
-        window.draw(block);
-      }
-      x += CELL_SIZE + GAP;
-    }
-    y += CELL_SIZE + GAP;
-    x = GAP + left_border;
-  }
-}
 
 int main() {
   Score score;
@@ -71,141 +20,68 @@ int main() {
   if (!junegull.loadFromFile("media/junegull.ttf")) {
     // error...
   }
-  // select the font
+
   title.setFont(junegull);
   title.setString("Tetris");
-  title.setCharacterSize((window_x + window_y) / 20); // in pixels, not points!
+  title.setCharacterSize((WINDOW_X + WINDOW_Y) / 20); // in pixels, not points!
   title.setFillColor(sf::Color::Black);
-  title.setPosition(window_x / 2 - 90, -15);
-
+  title.setPosition(WINDOW_X / 2 - 90, -15);
   score_text.setFont(junegull);
   score_text.setString("Score:");
-  score_text.setCharacterSize((window_x + window_y) / 30);
+  score_text.setCharacterSize((WINDOW_X + WINDOW_Y) / 30);
   score_text.setFillColor(sf::Color::Black);
-  score_text.setPosition(window_x - 190, window_y * 0.1);
+  score_text.setPosition(WINDOW_X - 190, WINDOW_Y * 0.1);
 
   score_number.setFont(junegull);
   score_number.setString(std::to_string(score.get_total_score()));
-  score_number.setCharacterSize((window_x + window_y) / 40);
+  score_number.setCharacterSize((WINDOW_X + WINDOW_Y) / 40);
   score_number.setFillColor(sf::Color::Black);
-  score_number.setPosition(window_x - 190, window_y * 0.1 + 40);
-  auto isValidPosition = [&](int x, int y) {
-    return (x >= 0 && x < COLUMNS && y >= 0 && y < ROWS &&
-            matrix[y][x] != std::to_underlying(cellType::active) &&
-            matrix[y][x] != std::to_underlying(cellType::sealed));
-  };
-
-  auto rotate = [](auto &&arg) { arg.rotate(); };
-
-  auto get_block_coords = [](auto &&arg) -> pieceCoords {
-    return arg.getBlockCoords();
-  };
+  score_number.setPosition(WINDOW_X - 190, WINDOW_Y * 0.1 + 40);
 
   //  std::variant<Tetromino<1>, Tetromino<2>, Tetromino<4>>;
   TetrominoVariant piece = choose_random(tetromino_piece_types);
-  auto start_piece = std::visit(get_block_coords, piece);
+  auto start_piece = std::visit(
+      [](auto &arg) -> pieceCoords { return arg.getBlockCoords(); }, piece);
 
-  auto window = sf::RenderWindow(sf::VideoMode(window_x, window_y), "Tetris");
+  auto window = sf::RenderWindow(sf::VideoMode(WINDOW_X, WINDOW_Y), "Tetris");
   window.setFramerateLimit(144);
 
-  sf::Clock clock;                    // starts the clock
-  sf::Time gameTick = sf::seconds(1); // game tick every 1 second
+  sf::Clock clock;                      // starts the clock
+  sf::Time gameTick = sf::seconds(0.7); // game tick every 0.7 seconds
 
-  sf::Clock keyClock;                  // starts the clock
-  sf::Time keyTick = sf::seconds(0.1); // can press a key every 0.1 seconds.
-
-  coords offset = std::make_tuple(0, 0); // (x, y)
+  coords offset = std::make_tuple(floor(COLUMNS / 2) - 2, 0); // (x, y)
 
   while (window.isOpen()) {
-    for (auto event = sf::Event{}; window.pollEvent(event);) {
-      if (event.type == sf::Event::Closed) {
+    set_piece_cell_type(start_piece, offset, matrix, cellType::empty);
+
+    sf::Event ev;
+    while (window.pollEvent(ev)) {
+      if (ev.type == sf::Event::Closed) {
         window.close();
       }
+      if (ev.type == sf::Event::KeyPressed) {
+        handle_key_presses(ev, piece, start_piece, offset, matrix, score);
+      }
     }
+    handle_game_tick(matrix, piece, start_piece, offset, clock, gameTick,
+                     score);
+    int cleared = clear_rows(matrix);
+    if (cleared > 0) {
+      score.clear(cleared);
+    }
+    if (cleared == 4) {
+      score.tetris();
+    }
+    // Fill it back with new offset
+    set_piece_cell_type(start_piece, offset, matrix, cellType::active);
+
     window.clear();
-    draw_board(window);
-    drawCells(window, matrix);
+    draw_cells(window, matrix);
     window.draw(title);
     window.draw(score_text);
     score_number.setString(std::to_string(score.get_total_score()));
     window.draw(score_number);
     window.display();
-
-    // remove the old piece that is active
-    for (auto [c_x, c_y] : start_piece) {
-      auto [offset_x, offset_y] = offset;
-      matrix[c_y + offset_y][c_x + offset_x] =
-          std::to_underlying(cellType::empty);
-    }
-    if (keyClock.getElapsedTime() > keyTick) { // game tick
-      if (shouldSeal(matrix, start_piece, offset)) {
-        for (auto [c_x, c_y] : start_piece) {
-          auto [offset_x, offset_y] = offset;
-          matrix[c_y + offset_y][c_x + offset_x] =
-              std::to_underlying(cellType::sealed);
-        }
-        int cleared = clearRows(matrix);
-        if (cleared > 0) {
-          score.clear(cleared);
-        }
-        if (cleared == 4) {
-          score.tetris();
-        }
-        piece = std::move(choose_random(tetromino_piece_types));
-        // auto tag =
-        // std::visit([](auto &&arg) -> auto { return arg.piece_tag; }, piece);
-        // std::cout << std::to_underlying(tag) << "\n";
-        start_piece = std::visit(get_block_coords, piece);
-        offset = std::make_tuple(0, 0);
-        continue;
-      } else {
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) ||
-            sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-          // left key is pressed: move our character
-          offset = movePiece(matrix, start_piece, 'r', offset);
-          keyClock.restart();
-        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) ||
-                   sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
-          // left key is pressed: move our character
-          offset = movePiece(matrix, start_piece, 'd', offset);
-          keyClock.restart();
-          score.tick();
-        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) ||
-                   sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-          // left key is pressed: move our character
-          offset = movePiece(matrix, start_piece, 'l', offset);
-          keyClock.restart();
-        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) {
-          std::visit(rotate, piece);
-          bool valid = true;
-          for (auto &[c_x, c_y] : std::visit(get_block_coords, piece)) {
-            auto [offset_x, offset_y] = offset;
-            int newX = c_x + offset_x;
-            int newY = c_y + offset_y;
-            if (!isValidPosition(newX, newY)) {
-              valid = false;
-            }
-          }
-          if (valid) {
-            start_piece = std::visit(get_block_coords, piece);
-          }
-          keyClock.restart();
-        }
-      }
-    }
-
-    if (clock.getElapsedTime() > gameTick) { // game tick
-      clock.restart();                       // Reset the clock
-      offset = movePiece(matrix, start_piece, 'd', offset);
-      score.tick();
-    }
-
-    // replace the moved (or not) active piece.
-    for (auto [c_x, c_y] : start_piece) {
-      auto [offset_x, offset_y] = offset;
-      matrix[c_y + offset_y][c_x + offset_x] =
-          std::to_underlying(cellType::active);
-    }
   }
 }
 
@@ -213,7 +89,7 @@ void printGrid(matrixType matrix) {
   constexpr auto guide =
       "a b c d e f g h i j k l m n o p q r s t u v w x y z"sv;
   std::cout << "  " << guide.substr(0, matrix[0].size() * 2) << "\n";
-  for (auto i{0UL}; const auto &row : matrix) {
+  for (auto i{0UL}; const auto &row : matrix) { // Debugging only!
     std::cout << guide[i] << ' ';
     for (const auto &cell : row) {
       std::cout << cell << ' ';
