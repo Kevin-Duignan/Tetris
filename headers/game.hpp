@@ -6,8 +6,7 @@
 #include "tetromino.hpp"
 #include <SFML/Graphics.hpp>
 
-void draw_cells(sf::RenderWindow &window, matrixType matrix,
-                sf::Color piece_colour);
+void draw_cells(sf::RenderWindow &window, matrixType &matrix, TetrominoVariant &piece);
 
 void handle_key_presses(sf::Event &ev, TetrominoVariant &piece,
                         pieceCoords &start_piece, coords &offset,
@@ -17,8 +16,8 @@ void handle_game_tick(matrixType &matrix, TetrominoVariant &piece,
                       pieceCoords &start_piece, coords &offset,
                       sf::Clock &clock, sf::Time &gameTick, Score &score);
 
-void set_piece_cell_type(pieceCoords &start_piece, coords &offset,
-                         matrixType &matrix, cell_type type);
+void set_piece_non_sealed(pieceCoords &start_piece, coords &offset,
+                          matrixType &matrix, cell_type type);
 
 bool is_valid_position(int x, int y, matrixType &matrix);
 

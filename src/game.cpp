@@ -27,14 +27,15 @@ void draw_board(sf::RenderWindow &window) {
   window.draw(matrix_background);
 }
 
-void draw_cells(sf::RenderWindow &window, matrixType matrix,
-                sf::Color piece_colour) {
+void draw_cells(sf::RenderWindow &window, matrixType &matrix,
+                TetrominoVariant &piece) {
 
   sf::RectangleShape cell(sf::Vector2f(CELL_SIZE, CELL_SIZE));
   cell.setFillColor(sf::Color(180, 50, 20));
 
+  // Draw the piece with assigned colour
   sf::RectangleShape block(sf::Vector2f(CELL_SIZE, CELL_SIZE));
-  block.setFillColor(piece_colour);
+  auto piece_tag = std::visit([](auto &arg) { return arg.piece_tag; }, piece);
 
   sf::RectangleShape background(sf::Vector2f(WINDOW_X, WINDOW_Y));
   background.setFillColor(sf::Color(PASTEL_YELLOW_LIGHT));
@@ -50,10 +51,21 @@ void draw_cells(sf::RenderWindow &window, matrixType matrix,
 
   for (int i = 0; i < ROWS; i++) {
     for (int j = 0; j < COLUMNS; j++) {
-      if (matrix[i][j] == std::to_underlying(cell_type::empty)) {
-        cell.setPosition(x, y);
-        // window.draw(cell);
-      } else { // there is a block in that spot
+
+      auto cell = matrix[i][j];
+      if (std::holds_alternative<non_sealed>(cell) &&
+          std::get<non_sealed>(cell) == non_sealed::active) {
+        auto [r, g, b] = PIECE_COLOURS_MAP.at(piece_tag);
+        block.setFillColor(sf::Color(r, g, b));
+        block.setPosition(x, y);
+        window.draw(block);
+      }
+
+      else if (std::holds_alternative<sealed_piece>(cell)) {
+        // Draw the colour of previous sealed pieces
+        auto piece_tag = std::get<sealed_piece>(matrix[i][j]);
+        auto [r, g, b] = PIECE_COLOURS_MAP.at(piece_tag);
+        block.setFillColor(sf::Color(r, g, b));
         block.setPosition(x, y);
         window.draw(block);
       }
@@ -124,11 +136,13 @@ void handle_game_tick(matrixType &matrix, TetrominoVariant &piece,
                       sf::Clock &clock, sf::Time &gameTick, Score &score) {
 
   if (shouldSeal(matrix, start_piece, offset)) {
-    set_piece_cell_type(start_piece, offset, matrix, cell_type::sealed);
+    auto piece_type =
+        std::visit([](auto &arg) { return arg.piece_tag; }, piece);
+    set_piece_non_sealed(start_piece, offset, matrix, piece_type);
     piece = std::move(choose_random(tetromino_piece_types));
     start_piece = std::visit(
         [](auto &arg) -> pieceCoords { return arg.getBlockCoords(); }, piece);
-    offset = std::make_tuple(floor(COLUMNS / 2) - 2, 0);
+    offset = std::make_tuple(COLUMNS / 2 - 2, 0);
   }
   if (clock.getElapsedTime() > gameTick) { // game tick
     clock.restart();                       // Reset the clock
@@ -137,18 +151,19 @@ void handle_game_tick(matrixType &matrix, TetrominoVariant &piece,
   }
 }
 
-void set_piece_cell_type(pieceCoords &start_piece, coords &offset,
-                         matrixType &matrix, cell_type type) {
+void set_piece_non_sealed(pieceCoords &start_piece, coords &offset,
+                          matrixType &matrix, cell_type type) {
   for (auto [c_x, c_y] : start_piece) {
     auto [offset_x, offset_y] = offset;
-    matrix[c_y + offset_y][c_x + offset_x] = std::to_underlying(type);
+    matrix[c_y + offset_y][c_x + offset_x] = type;
   }
 }
 
 bool is_valid_position(int x, int y, matrixType &matrix) {
-  return (x >= 0 && x < COLUMNS && y >= 0 && y < ROWS &&
-          matrix[y][x] != std::to_underlying(cell_type::active) &&
-          matrix[y][x] != std::to_underlying(cell_type::sealed));
+  bool is_within_board = x >= 0 && x < COLUMNS && y >= 0 && y < ROWS;
+  bool is_empty = std::holds_alternative<non_sealed>(matrix[y][x]) &&
+                  std::get<non_sealed>(matrix[y][x]) == non_sealed::empty;
+  return is_within_board && is_empty;
 }
 
 // Choosing the random tetrimino

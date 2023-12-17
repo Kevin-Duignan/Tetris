@@ -28,7 +28,7 @@ template <std::uint8_t Orientations> struct Tetromino : public BaseTetromino {
   constexpr explicit Tetromino(
       piece_tag_t tag, piece_type orientations,
       std::tuple<std::uint8_t, std::uint8_t, std::uint8_t> colour)
-      : BaseTetromino{tag}, piece_mask(orientations), piece_colour(colour) {}
+      : BaseTetromino{tag}, piece_mask(orientations) {}
 
   auto rotate() -> void {
     current_orientation = (current_orientation + 1) % Orientations;
@@ -60,7 +60,6 @@ template <std::uint8_t Orientations> struct Tetromino : public BaseTetromino {
   }
 
   piece_type piece_mask;
-  std::tuple<std::uint8_t, std::uint8_t, std::uint8_t> piece_colour;
 };
 
 using TetrominoVariant = std::variant<Tetromino<1>, Tetromino<2>, Tetromino<4>>;
