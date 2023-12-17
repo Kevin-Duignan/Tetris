@@ -6,7 +6,8 @@
 #include "tetromino.hpp"
 #include <SFML/Graphics.hpp>
 
-void draw_cells(sf::RenderWindow &window, matrixType &matrix, TetrominoVariant &piece);
+void draw_cells(sf::RenderWindow &window, matrixType &matrix,
+                TetrominoVariant &piece);
 
 void handle_key_presses(sf::Event &ev, TetrominoVariant &piece,
                         pieceCoords &start_piece, coords &offset,
@@ -20,5 +21,7 @@ void set_piece_non_sealed(pieceCoords &start_piece, coords &offset,
                           matrixType &matrix, cell_type type);
 
 bool is_valid_position(int x, int y, matrixType &matrix);
+
+bool handle_game_over(matrixType &matrix);
 
 TetrominoVariant choose_random(std::array<TetrominoVariant, 7> pieces);
