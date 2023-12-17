@@ -18,7 +18,7 @@ void handle_game_tick(matrixType &matrix, TetrominoVariant &piece,
                       sf::Clock &clock, sf::Time &gameTick, Score &score);
 
 void set_piece_cell_type(pieceCoords &start_piece, coords &offset,
-                         matrixType &matrix, cellType type);
+                         matrixType &matrix, cell_type type);
 
 bool is_valid_position(int x, int y, matrixType &matrix);
 

@@ -6,8 +6,8 @@ void movePiece(matrixType &matrix, pieceCoords piece, char direction,
   // Function to check if the new position is valid
   auto isValidPosition = [&](int x, int y) { // lambda!
     return (x >= 0 && x < COLUMNS && y >= 0 && y < ROWS &&
-            matrix[y][x] != std::to_underlying(cellType::active) &&
-            matrix[y][x] != std::to_underlying(cellType::sealed));
+            matrix[y][x] != std::to_underlying(cell_type::active) &&
+            matrix[y][x] != std::to_underlying(cell_type::sealed));
   };
 
   auto [offset_x, offset_y] = offset;
@@ -55,7 +55,7 @@ bool shouldSeal(matrixType matrix, pieceCoords piece, coords offset) {
     int newX = std::get<0>(c) + std::get<0>(offset);
     int newY = std::get<1>(c) + std::get<1>(offset) + 1;
     if (!(newX >= 0 && newX < COLUMNS && newY >= 0 && newY < ROWS &&
-          matrix[newY][newX] != std::to_underlying(cellType::sealed))) {
+          matrix[newY][newX] != std::to_underlying(cell_type::sealed))) {
       return true; // Can't move down
     }
   }

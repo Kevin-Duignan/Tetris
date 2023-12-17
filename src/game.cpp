@@ -50,7 +50,7 @@ void draw_cells(sf::RenderWindow &window, matrixType matrix,
 
   for (int i = 0; i < ROWS; i++) {
     for (int j = 0; j < COLUMNS; j++) {
-      if (matrix[i][j] == std::to_underlying(cellType::empty)) {
+      if (matrix[i][j] == std::to_underlying(cell_type::empty)) {
         cell.setPosition(x, y);
         // window.draw(cell);
       } else { // there is a block in that spot
@@ -124,7 +124,7 @@ void handle_game_tick(matrixType &matrix, TetrominoVariant &piece,
                       sf::Clock &clock, sf::Time &gameTick, Score &score) {
 
   if (shouldSeal(matrix, start_piece, offset)) {
-    set_piece_cell_type(start_piece, offset, matrix, cellType::sealed);
+    set_piece_cell_type(start_piece, offset, matrix, cell_type::sealed);
     piece = std::move(choose_random(tetromino_piece_types));
     start_piece = std::visit(
         [](auto &arg) -> pieceCoords { return arg.getBlockCoords(); }, piece);
@@ -138,7 +138,7 @@ void handle_game_tick(matrixType &matrix, TetrominoVariant &piece,
 }
 
 void set_piece_cell_type(pieceCoords &start_piece, coords &offset,
-                         matrixType &matrix, cellType type) {
+                         matrixType &matrix, cell_type type) {
   for (auto [c_x, c_y] : start_piece) {
     auto [offset_x, offset_y] = offset;
     matrix[c_y + offset_y][c_x + offset_x] = std::to_underlying(type);
@@ -147,8 +147,8 @@ void set_piece_cell_type(pieceCoords &start_piece, coords &offset,
 
 bool is_valid_position(int x, int y, matrixType &matrix) {
   return (x >= 0 && x < COLUMNS && y >= 0 && y < ROWS &&
-          matrix[y][x] != std::to_underlying(cellType::active) &&
-          matrix[y][x] != std::to_underlying(cellType::sealed));
+          matrix[y][x] != std::to_underlying(cell_type::active) &&
+          matrix[y][x] != std::to_underlying(cell_type::sealed));
 }
 
 // Choosing the random tetrimino

@@ -52,7 +52,7 @@ int main() {
   coords offset = std::make_tuple(floor(COLUMNS / 2) - 2, 0); // (x, y)
 
   while (window.isOpen()) {
-    set_piece_cell_type(start_piece, offset, matrix, cellType::empty);
+    set_piece_cell_type(start_piece, offset, matrix, cell_type::empty);
 
     sf::Event ev;
     while (window.pollEvent(ev)) {
@@ -73,7 +73,7 @@ int main() {
       score.tetris();
     }
     // Fill it back with new offset
-    set_piece_cell_type(start_piece, offset, matrix, cellType::active);
+    set_piece_cell_type(start_piece, offset, matrix, cell_type::active);
 
     window.clear();
 
