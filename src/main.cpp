@@ -15,30 +15,6 @@ using namespace std::literals;
 float window_x = (CELL_SIZE + GAP) * COLUMNS + GAP + left_border + right_border;
 float window_y = (CELL_SIZE + GAP) * ROWS + GAP + top_border + bottom_border;
 
-std::tuple<sf::Text, sf::Text, sf::Text> initialise_texts() {
-  sf::Font junegull;
-  if (!junegull.loadFromFile("media/junegull.ttf")) {
-    // error...
-  }
-  sf::Text title, score_text, score_number;
-  // select the font
-  title.setFont(junegull);
-  title.setString("Tetris");
-  title.setCharacterSize(
-      floor((window_x + window_y) / 20)); // in pixels, not points!
-  title.setFillColor(sf::Color::Black);
-  title.setPosition(window_x / 2 - 90, -15);
-
-  score_text.setFont(junegull);
-  score_text.setString("Score:");
-  score_text.setCharacterSize(floor((window_x + window_y) / 20));
-
-  score_number.setFont(junegull);
-  score_number.setString("0");
-  score_text.setCharacterSize(floor((window_x + window_y) / 20));
-
-  return std::make_tuple(title, score_text, score_number);
-}
 void draw_board(sf::RenderWindow &window) {
 
   sf::RectangleShape background(sf::Vector2f(window_x, window_y));
@@ -90,7 +66,6 @@ int main() {
   for (auto &row : matrix) {
     std::fill(row.begin(), row.end(), 0);
   }
-
   sf::Text title, score_text, score_number;
   sf::Font junegull;
   if (!junegull.loadFromFile("media/junegull.ttf")) {
@@ -114,7 +89,6 @@ int main() {
   score_number.setCharacterSize((window_x + window_y) / 40);
   score_number.setFillColor(sf::Color::Black);
   score_number.setPosition(window_x - 190, window_y * 0.1 + 40);
-
   auto isValidPosition = [&](int x, int y) {
     return (x >= 0 && x < COLUMNS && y >= 0 && y < ROWS &&
             matrix[y][x] != std::to_underlying(cellType::active) &&
@@ -250,3 +224,28 @@ void printGrid(matrixType matrix) {
   std::cout << '\n';
   std::cout << '\n';
 }
+
+/* This doesn't work yet, but it would be nice.
+void initialise_texts(sf::Text &title, sf::Text &score_text,
+                      sf::Text &score_number) {
+  sf::Font junegull;
+  if (!junegull.loadFromFile("media/junegull.ttf")) {
+    // error...
+  }
+  // select the font
+  title.setFont(junegull);
+  title.setString("Tetris");
+  title.setCharacterSize(
+      floor((window_x + window_y) / 20)); // in pixels, not points!
+  title.setFillColor(sf::Color::Black);
+  title.setPosition(window_x / 2 - 90, -15);
+
+  score_text.setFont(junegull);
+  score_text.setString("Score:");
+  score_text.setCharacterSize(floor((window_x + window_y) / 20));
+
+  score_number.setFont(junegull);
+  score_number.setString("0");
+  score_text.setCharacterSize(floor((window_x + window_y) / 20));
+}
+*/
