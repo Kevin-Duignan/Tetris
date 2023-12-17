@@ -1,21 +1,21 @@
 #pragma once
 
+#include "../headers/colours.hpp"
 #include <algorithm>
+#include <array>
 #include <bitset>
 #include <iostream>
 #include <memory>
 #include <random>
 #include <tuple>
 #include <variant>
-
 struct BaseTetromino {
-  enum class piece_tag_t : short { I, J, L, O, S, T, Z };
+  enum class piece_tag_t : short { I = 3, J, L, O, S, T, Z };
 
   constexpr explicit BaseTetromino(piece_tag_t tag) : piece_tag(tag) {}
 
   piece_tag_t piece_tag;
   std::uint8_t current_orientation = 0;
-  std::tuple<std::uint8_t, std::uint8_t> coords = std::make_tuple(0, 0);
 };
 
 template <std::uint8_t Orientations> struct Tetromino : public BaseTetromino {
@@ -26,7 +26,9 @@ template <std::uint8_t Orientations> struct Tetromino : public BaseTetromino {
   constexpr Tetromino(Tetromino &&other) noexcept = default;
   constexpr Tetromino &operator=(const Tetromino &other) = default;
 
-  constexpr explicit Tetromino(piece_tag_t tag, piece_type orientations)
+  constexpr explicit Tetromino(
+      piece_tag_t tag, piece_type orientations,
+      std::tuple<std::uint8_t, std::uint8_t, std::uint8_t> colour)
       : BaseTetromino{tag}, piece_mask(orientations) {}
 
   auto rotate() -> void {
@@ -50,11 +52,8 @@ template <std::uint8_t Orientations> struct Tetromino : public BaseTetromino {
         }
       }
     }
-
     return block_coords;
   }
-
-  constexpr auto get_orientations() { return Orientations; }
 
   constexpr bool operator()(const std::uint8_t &x,
                             const std::uint8_t &y) const {
@@ -67,36 +66,48 @@ template <std::uint8_t Orientations> struct Tetromino : public BaseTetromino {
 using TetrominoVariant = std::variant<Tetromino<1>, Tetromino<2>, Tetromino<4>>;
 constexpr auto I_piece_t = Tetromino<2>(
     BaseTetromino::piece_tag_t::I,
-    Tetromino<2>::piece_type{0b0000000011110000, 0b0001000100010001});
+    Tetromino<2>::piece_type{0b0000000011110000, 0b0001000100010001}, GREEN);
 
 constexpr auto J_piece_t = Tetromino<4>(
     BaseTetromino::piece_tag_t::J,
     Tetromino<4>::piece_type{0b0000000001110001, 0b0000000100010011,
-                             0b0000000001000111, 0b0000001100100010});
+                             0b0000000001000111, 0b0000001100100010},
+    BLUE);
 
 constexpr auto L_piece_t = Tetromino<4>(
     BaseTetromino::piece_tag_t::L,
     Tetromino<4>::piece_type{0b0000000000010111, 0b0000001000100011,
-                             0b0000000001110100, 0b0000001100010001});
+                             0b0000000001110100, 0b0000001100010001},
+    PURPLE);
 
 constexpr auto O_piece_t =
     Tetromino<1>(BaseTetromino::piece_tag_t::O,
-                 Tetromino<1>::piece_type{0b0000000000110011});
+                 Tetromino<1>::piece_type{0b0000000000110011}, RED);
 
 constexpr auto S_piece_t = Tetromino<2>(
     BaseTetromino::piece_tag_t::S,
-    Tetromino<2>::piece_type{0b0000000000110110, 0b0000001000110001});
+    Tetromino<2>::piece_type{0b0000000000110110, 0b0000001000110001}, ORANGE);
 
 constexpr auto T_piece_t = Tetromino<4>(
     BaseTetromino::piece_tag_t::T,
     Tetromino<4>::piece_type{0b0000000000100111, 0b0000010001100100,
-                             0b0000011100100000, 0b0000000100110001});
+                             0b0000011100100000, 0b0000000100110001},
+    PINK);
 
 constexpr auto Z_piece_t = Tetromino<2>(
     BaseTetromino::piece_tag_t::Z,
-    Tetromino<2>::piece_type{0b0000000001100011, 0b0000000100110010});
+    Tetromino<2>::piece_type{0b0000000001100011, 0b0000000100110010}, CYAN);
 // clang-format on
 
 constexpr std::array<TetrominoVariant, 7> tetromino_piece_types = {
     I_piece_t, J_piece_t, L_piece_t, O_piece_t,
     S_piece_t, T_piece_t, Z_piece_t};
+
+const std::map<BaseTetromino::piece_tag_t, RGB> PIECE_COLOURS_MAP = {
+    {BaseTetromino::piece_tag_t::I, GREEN},
+    {BaseTetromino::piece_tag_t::J, BLUE},
+    {BaseTetromino::piece_tag_t::L, PURPLE},
+    {BaseTetromino::piece_tag_t::O, RED},
+    {BaseTetromino::piece_tag_t::S, ORANGE},
+    {BaseTetromino::piece_tag_t::T, PINK},
+    {BaseTetromino::piece_tag_t::Z, CYAN}};

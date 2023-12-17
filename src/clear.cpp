@@ -2,16 +2,16 @@
 #include "../headers/score.hpp"
 #include <iostream>
 
-bool shouldClear(std::array<int, COLUMNS> row);
+bool shouldClear(std::array<cell_type, COLUMNS> row);
 void moveRowsDown(matrixType &matrix, int movable);
 
-int clear_rows(           // clears rows, and returns how many it cleared.
-    matrixType &matrix) { // consider updating so it goes from the bottom first.
+// clears rows, and returns how many it cleared.
+int clear_rows(matrixType &matrix) {
   int i = 0;
   int cleared = 0;
   for (auto &row : matrix) {
     if (shouldClear(row)) {
-      std::fill(row.begin(), row.end(), 0);
+      std::fill(row.begin(), row.end(), non_sealed::empty);
       moveRowsDown(matrix, i);
       cleared++;
     }
@@ -20,9 +20,9 @@ int clear_rows(           // clears rows, and returns how many it cleared.
   return cleared;
 }
 
-bool shouldClear(std::array<int, COLUMNS> row) {
-  for (int number : row) {
-    if (number != 2) {
+bool shouldClear(std::array<cell_type, COLUMNS> row) {
+  for (cell_type val : row) {
+    if (std::holds_alternative<non_sealed>(val)) {
       return false;
     }
   }

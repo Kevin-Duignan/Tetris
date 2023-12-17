@@ -13,7 +13,7 @@ int main() {
   Score score;
   matrixType matrix;
   for (auto &row : matrix) {
-    std::fill(row.begin(), row.end(), 0);
+    std::fill(row.begin(), row.end(), non_sealed::empty);
   }
   sf::Text title, score_text, score_number;
   sf::Font junegull;
@@ -49,10 +49,10 @@ int main() {
   sf::Clock clock;                      // starts the clock
   sf::Time gameTick = sf::seconds(0.7); // game tick every 0.7 seconds
 
-  coords offset = std::make_tuple(floor(COLUMNS / 2) - 2, 0); // (x, y)
+  coords offset = std::make_tuple(COLUMNS / 2 - 2, 0); // (x, y)
 
   while (window.isOpen()) {
-    set_piece_cell_type(start_piece, offset, matrix, cellType::empty);
+    set_piece_non_sealed(start_piece, offset, matrix, non_sealed::empty);
 
     sf::Event ev;
     while (window.pollEvent(ev)) {
@@ -73,14 +73,16 @@ int main() {
       score.tetris();
     }
     // Fill it back with new offset
-    set_piece_cell_type(start_piece, offset, matrix, cellType::active);
+    set_piece_non_sealed(start_piece, offset, matrix, non_sealed::active);
 
     window.clear();
-    draw_cells(window, matrix);
+
+    draw_cells(window, matrix, piece);
     window.draw(title);
     window.draw(score_text);
     score_number.setString(std::to_string(score.get_total_score()));
     window.draw(score_number);
+
     window.display();
   }
 }
@@ -89,13 +91,25 @@ void printGrid(matrixType matrix) {
   constexpr auto guide =
       "a b c d e f g h i j k l m n o p q r s t u v w x y z"sv;
   std::cout << "  " << guide.substr(0, matrix[0].size() * 2) << "\n";
-  for (auto i{0UL}; const auto &row : matrix) { // Debugging only!
-    std::cout << guide[i] << ' ';
+  auto guideIter = guide.begin();
+  for (const auto &row : matrix) { // Debugging only!
+    std::cout << *guideIter << ' ';
+    guideIter += 2;
     for (const auto &cell : row) {
-      std::cout << cell << ' ';
+      std::visit(
+          [](auto &&arg) {
+            using T = std::decay_t<decltype(arg)>;
+            if constexpr (std::is_same_v<T, non_sealed>) {
+              std::cout << static_cast<int>(arg);
+            } else if constexpr (std::is_same_v<T,
+                                                BaseTetromino::piece_tag_t>) {
+              std::cout << static_cast<int>(arg);
+            }
+          },
+          cell);
+      std::cout << ' ';
     }
     std::cout << '\n';
-    i += 2;
   }
   std::cout << '\n';
   std::cout << '\n';

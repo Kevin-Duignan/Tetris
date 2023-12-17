@@ -1,13 +1,17 @@
 #pragma once
 
 #include "const.hpp"
+#include "tetromino.hpp"
 #include <array>
 #include <cstdint>
 #include <tuple>
 #include <vector>
 
-enum class cellType : short { empty, active, sealed };
-using matrixType = std::array<std::array<int, COLUMNS>, ROWS>;
+enum class non_sealed : short { empty, active };
+using sealed_piece = BaseTetromino::piece_tag_t;
+using cell_type = std::variant<non_sealed, sealed_piece>;
+
+using matrixType = std::array<std::array<cell_type, COLUMNS>, ROWS>;
 using coords = std::tuple<std::uint8_t, std::uint8_t>; // (x, y)
 using pieceCoords = std::vector<coords>;
 
