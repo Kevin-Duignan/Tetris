@@ -52,6 +52,11 @@ int main() {
   coords offset = std::make_tuple(COLUMNS / 2 - 2, 0); // (x, y)
 
   while (window.isOpen()) {
+    if (handle_game_over(matrix)) {
+      // TODO: add restart logic here
+      // Stop everything for now
+      break;
+    }
     set_piece_non_sealed(start_piece, offset, matrix, non_sealed::empty);
 
     sf::Event ev;

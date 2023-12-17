@@ -166,6 +166,17 @@ bool is_valid_position(int x, int y, matrixType &matrix) {
   return is_within_board && is_empty;
 }
 
+bool handle_game_over(matrixType &matrix) {
+  auto first_row = matrix[0];
+  for (auto &cell : first_row) {
+    if (std::holds_alternative<sealed_piece>(cell)) {
+      std::cout << "Game Over" << std::endl;
+      return true;
+    }
+  }
+  return false;
+}
+
 // Choosing the random tetrimino
 TetrominoVariant choose_random(std::array<TetrominoVariant, 7> pieces) {
   std::random_device rd;  // a seed source for the random number engine

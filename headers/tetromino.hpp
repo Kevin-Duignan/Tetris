@@ -1,7 +1,8 @@
 #pragma once
 
 #include "../headers/colours.hpp"
-#include <algorithm>
+#include <algorithm> 
+#include <array>
 #include <bitset>
 #include <iostream>
 #include <memory>
