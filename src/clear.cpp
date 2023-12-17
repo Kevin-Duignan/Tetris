@@ -1,4 +1,5 @@
 #include "../headers/clear.hpp"
+#include "../headers/score.hpp"
 #include <iostream>
 
 bool shouldClear(std::array<int, COLUMNS> row);
