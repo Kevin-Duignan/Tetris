@@ -9,20 +9,20 @@ void print_coords(const coords &c) {
 void draw_board(sf::RenderWindow &window) {
 
   sf::RectangleShape background(sf::Vector2f(WINDOW_X, WINDOW_Y));
-  background.setFillColor(sf::Color(pastel_yellow_light));
+  background.setFillColor(sf::Color(PASTEL_YELLOW_LIGHT));
   window.draw(background);
 
   sf::RectangleShape matrix_border(
       sf::Vector2f((CELL_SIZE + GAP) * COLUMNS + GAP * 3,
                    (CELL_SIZE + GAP) * ROWS + GAP * 3));
   matrix_border.setPosition(LEFT_BORDER - GAP, TOP_BORDER - GAP);
-  matrix_border.setFillColor(sf::Color(brown));
+  matrix_border.setFillColor(sf::Color(BROWN));
   window.draw(matrix_border);
 
   sf::RectangleShape matrix_background(sf::Vector2f(
       (CELL_SIZE + GAP) * COLUMNS - GAP, (CELL_SIZE + GAP) * ROWS - GAP));
   matrix_background.setPosition(LEFT_BORDER + GAP, TOP_BORDER + GAP);
-  matrix_background.setFillColor(sf::Color(pastel_yellow_dark));
+  matrix_background.setFillColor(sf::Color(PASTEL_YELLOW_DARK));
   window.draw(matrix_background);
 }
 void draw_cells(sf::RenderWindow &window, matrixType matrix) {
@@ -34,13 +34,13 @@ void draw_cells(sf::RenderWindow &window, matrixType matrix) {
   block.setFillColor(sf::Color(0, 255, 0));
 
   sf::RectangleShape background(sf::Vector2f(WINDOW_X, WINDOW_Y));
-  background.setFillColor(sf::Color(pastel_yellow_light));
+  background.setFillColor(sf::Color(PASTEL_YELLOW_LIGHT));
   window.draw(background);
 
   sf::RectangleShape matrix_background(sf::Vector2f(
       (CELL_SIZE + GAP) * COLUMNS + GAP, (CELL_SIZE + GAP) * ROWS + GAP));
   matrix_background.setPosition(LEFT_BORDER, TOP_BORDER);
-  matrix_background.setFillColor(sf::Color(pastel_yellow_dark));
+  matrix_background.setFillColor(sf::Color(PASTEL_YELLOW_DARK));
   window.draw(matrix_background);
 
   float x = GAP + LEFT_BORDER, y = GAP + TOP_BORDER;
