@@ -243,10 +243,8 @@ void clear_drop_shadow(matrixType &matrix) {
 
 bool is_valid_position(int x, int y, matrixType &matrix) {
   bool is_within_board = x >= 0 && x < COLUMNS && y >= 0 && y < ROWS;
-  bool is_empty =
-      std::holds_alternative<non_sealed>(matrix[y][x]) &&
-      (std::get<non_sealed>(matrix[y][x]) == non_sealed::empty ||
-       std::get<non_sealed>(matrix[y][x]) == non_sealed::drop_shadow);
+  bool is_empty = std::holds_alternative<non_sealed>(matrix[y][x]);
+
   return is_within_board && is_empty;
 }
 
