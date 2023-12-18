@@ -84,6 +84,7 @@ int main() {
 
     window.clear();
 
+    draw_board(window);
     draw_cells(window, matrix, piece);
     window.draw(title);
     window.draw(score_text);

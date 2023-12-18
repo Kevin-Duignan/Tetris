@@ -15,13 +15,13 @@ void draw_board(sf::RenderWindow &window) {
 
   sf::RectangleShape matrix_border(
       sf::Vector2f((CELL_SIZE + GAP) * COLUMNS + GAP * 3,
-                   (CELL_SIZE + GAP) * ROWS + GAP * 3));
+                   (CELL_SIZE + GAP) * (ROWS - 2) + GAP * 3));
   matrix_border.setPosition(LEFT_BORDER - GAP, TOP_BORDER - GAP);
   matrix_border.setFillColor(sf::Color(MIDNIGHT_BLUE));
   window.draw(matrix_border);
 
   sf::RectangleShape matrix_background(sf::Vector2f(
-      (CELL_SIZE + GAP) * COLUMNS - GAP, (CELL_SIZE + GAP) * ROWS - GAP));
+      (CELL_SIZE + GAP) * COLUMNS, (CELL_SIZE + GAP) * (ROWS - 2)));
   matrix_background.setPosition(LEFT_BORDER + GAP, TOP_BORDER + GAP);
   matrix_background.setFillColor(sf::Color(DARK_GRAY));
   window.draw(matrix_background);
@@ -30,26 +30,17 @@ void draw_board(sf::RenderWindow &window) {
 void draw_cells(sf::RenderWindow &window, matrixType &matrix,
                 TetrominoVariant &piece) {
 
-  sf::RectangleShape cell(sf::Vector2f(CELL_SIZE, CELL_SIZE));
-  cell.setFillColor(sf::Color(180, 50, 20));
+  sf::RectangleShape empty_cell(sf::Vector2f(CELL_SIZE, CELL_SIZE));
+  empty_cell.setFillColor(sf::Color(180, 50, 20));
 
   // Draw the piece with assigned colour
   sf::RectangleShape block(sf::Vector2f(CELL_SIZE, CELL_SIZE));
   auto piece_tag = std::visit([](auto &arg) { return arg.piece_tag; }, piece);
 
-  sf::RectangleShape background(sf::Vector2f(WINDOW_X, WINDOW_Y));
-  background.setFillColor(sf::Color(LIGHT_GRAY));
-  window.draw(background);
-
-  sf::RectangleShape matrix_background(sf::Vector2f(
-      (CELL_SIZE + GAP) * COLUMNS + GAP, (CELL_SIZE + GAP) * ROWS + GAP));
-  matrix_background.setPosition(LEFT_BORDER, TOP_BORDER);
-  matrix_background.setFillColor(sf::Color(DARK_GRAY));
-  window.draw(matrix_background);
-
   float x = GAP + LEFT_BORDER, y = GAP + TOP_BORDER;
 
-  for (int i = 0; i < ROWS; i++) {
+  // Pieces slowly reveal themselves
+  for (int i = 2; i < ROWS; i++) {
     for (int j = 0; j < COLUMNS; j++) {
 
       auto cell = matrix[i][j];
@@ -66,8 +57,6 @@ void draw_cells(sf::RenderWindow &window, matrixType &matrix,
         auto piece_tag = std::get<sealed_piece>(matrix[i][j]);
         auto [r, g, b] = PIECE_COLOURS_MAP.at(piece_tag);
         block.setFillColor(sf::Color(r, g, b));
-        block.setPosition(x, y);
-        window.draw(block);
       }
       x += CELL_SIZE + GAP;
     }

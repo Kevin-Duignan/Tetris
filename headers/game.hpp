@@ -6,6 +6,7 @@
 #include "tetromino.hpp"
 #include <SFML/Graphics.hpp>
 
+void draw_board(sf::RenderWindow &window);
 void draw_cells(sf::RenderWindow &window, matrixType &matrix,
                 TetrominoVariant &piece);
 
