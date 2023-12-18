@@ -8,14 +8,14 @@ void print_coords(const coords &c) {
 }
 
 void draw_gameover(sf::RenderWindow &window) {
-  sf::RectangleShape box(sf::Vector2f(280, 200));
+  sf::RectangleShape box(sf::Vector2f(250, 200));
   box.setFillColor(sf::Color(LIGHT_GRAY));
-  box.setPosition(LEFT_BORDER - GAP + 40, TOP_BORDER + 80);
+  box.setPosition(LEFT_BORDER - GAP + 30, TOP_BORDER + 80);
   window.draw(box);
 
-  sf::RectangleShape restart_box(sf::Vector2f(280, 60));
+  sf::RectangleShape restart_box(sf::Vector2f(250, 60));
   restart_box.setFillColor(sf::Color(LIGHT_GRAY));
-  restart_box.setPosition(LEFT_BORDER - GAP + 40, TOP_BORDER + 310);
+  restart_box.setPosition(LEFT_BORDER - GAP + 30, TOP_BORDER + 310);
   window.draw(restart_box);
 }
 
@@ -26,8 +26,8 @@ void draw_board(sf::RenderWindow &window) {
   window.draw(background);
 
   sf::RectangleShape matrix_border(
-      sf::Vector2f((CELL_SIZE + GAP) * COLUMNS + GAP * 3,
-                   (CELL_SIZE + GAP) * (ROWS - 2) + GAP * 3));
+      sf::Vector2f((CELL_SIZE + GAP) * COLUMNS + GAP * 3 + 3,
+                   (CELL_SIZE + GAP) * (ROWS - 2) + GAP * 3 + 3));
   matrix_border.setPosition(LEFT_BORDER - GAP, TOP_BORDER - GAP);
   matrix_border.setFillColor(sf::Color(MIDNIGHT_BLUE));
   window.draw(matrix_border);
@@ -184,12 +184,15 @@ bool is_valid_position(int x, int y, matrixType &matrix) {
   return is_within_board && is_empty;
 }
 
-bool handle_game_over(matrixType &matrix) {
-  auto first_row = matrix[0];
-  for (auto &cell : first_row) {
-    if (std::holds_alternative<sealed_piece>(cell)) {
-      std::cout << "Game Over" << std::endl;
-      return true;
+bool handle_game_over(matrixType &matrix) { // If any out of bounds row has a
+                                            // sealed piece, you lose.
+  std::array<cell_type, COLUMNS> ceiling_rows[2] = {
+      matrix[0], matrix[1]}; // rows that are out of bounds
+  for (auto &row : ceiling_rows) {
+    for (auto &cell : row) {
+      if (std::holds_alternative<sealed_piece>(cell)) {
+        return true;
+      }
     }
   }
   return false;

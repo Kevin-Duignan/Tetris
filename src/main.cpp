@@ -48,13 +48,13 @@ int main() {
   gameover_text.setString("Game\nOver");
   gameover_text.setCharacterSize((WINDOW_X + WINDOW_Y) / 15);
   gameover_text.setFillColor(sf::Color::Black);
-  gameover_text.setPosition(LEFT_BORDER - GAP + 90, TOP_BORDER + 80);
+  gameover_text.setPosition(LEFT_BORDER - GAP + 65, TOP_BORDER + 80);
 
   restart_text.setFont(junegull);
   restart_text.setString("Press r to restart");
   restart_text.setCharacterSize((WINDOW_X + WINDOW_Y) / 40);
   restart_text.setFillColor(sf::Color::Black);
-  restart_text.setPosition(LEFT_BORDER - GAP + 53, TOP_BORDER + 320);
+  restart_text.setPosition(LEFT_BORDER - GAP + 31, TOP_BORDER + 320);
 
   //  std::variant<Tetromino<1>, Tetromino<2>, Tetromino<4>>;
   TetrominoVariant piece = choose_random(tetromino_piece_types);
@@ -73,7 +73,8 @@ int main() {
   while (window.isOpen()) {
     sf::Event ev;
 
-    if (handle_game_over(matrix)) {
+    if (handle_game_over(matrix)) { // can be optimised, only needs to check
+                                    // gameover condition after every seal.
 
       while (window.pollEvent(ev)) {
         handle_event(window, ev, piece, start_piece, offset, matrix, score,
