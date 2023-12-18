@@ -66,7 +66,7 @@ void draw_cells(sf::RenderWindow &window, matrixType &matrix,
 
       else if (std::holds_alternative<non_sealed>(cell) &&
                std::get<non_sealed>(cell) == non_sealed::drop_shadow) {
-        block.setFillColor(sf::Color(100, 100, 100, 100)); // Translucent
+        block.setFillColor(sf::Color(200, 200, 200, 50)); // Translucent
         block.setPosition(x, y);
         window.draw(block);
       }
