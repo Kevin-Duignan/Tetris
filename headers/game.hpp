@@ -7,8 +7,12 @@
 #include <SFML/Graphics.hpp>
 
 void draw_board(sf::RenderWindow &window);
+
 void draw_cells(sf::RenderWindow &window, matrixType &matrix,
                 TetrominoVariant &piece);
+
+void draw_next_piece(sf::RenderWindow &window, TetrominoVariant &piece, float x,
+                     float y);
 
 void draw_gameover(sf::RenderWindow &window);
 
@@ -38,8 +42,9 @@ void handle_event(sf::RenderWindow &window, sf::Event &ev,
                   Score &score, sf::Time gameTick, sf::Clock clock);
 
 void draw_game(sf::RenderWindow &window, matrixType &matrix,
-               TetrominoVariant &piece, sf::Text &title, sf::Text &score_text,
-               sf::Text &score_number, Score &score);
+               TetrominoVariant &piece, TetrominoVariant &next_piece,
+               sf::Text &title, sf::Text &score_text, sf::Text &score_number,
+               Score &score);
 
 void draw_gameover(sf::RenderWindow &window, sf::Text &gameover_text,
                    sf::Text &restart_text);

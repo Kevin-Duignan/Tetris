@@ -80,6 +80,41 @@ void draw_cells(sf::RenderWindow &window, matrixType &matrix,
   }
 }
 
+void draw_next_piece(sf::RenderWindow &window, TetrominoVariant &piece, float x,
+                     float y) {
+  // Draw the border
+  sf::RectangleShape border(sf::Vector2f(160, 110)); // Adjust size as needed
+  border.setFillColor(sf::Color::White);             // Adjust color as needed
+  border.setPosition(x - 5, y - 5); // Adjust position as needed
+  window.draw(border);
+
+  // Draw the background
+  sf::RectangleShape background(
+      sf::Vector2f(150, 100));               // Adjust size as needed
+  background.setFillColor(sf::Color::Black); // Adjust color as needed
+  background.setPosition(x, y);
+  window.draw(background);
+
+  // Calculate the center of the background
+  float startX = x + background.getSize().x / 6;
+  float startY = y + background.getSize().y / 7;
+
+  // Draw the piece
+  sf::RectangleShape block(sf::Vector2f(CELL_SIZE, CELL_SIZE));
+  auto piece_tag = std::visit([](auto &arg) { return arg.piece_tag; }, piece);
+
+  for (auto [c_x, c_y] :
+       std::visit([](auto &arg) -> pieceCoords { return arg.getBlockCoords(); },
+                  piece)) {
+    auto [r, g, b] = PIECE_COLOURS_MAP.at(piece_tag);
+    block.setFillColor(sf::Color(r, g, b));
+    // Adjust the position to center the piece
+    block.setPosition(startX + (c_x * (CELL_SIZE + GAP)),
+                      startY + (c_y * (CELL_SIZE + GAP)));
+    window.draw(block);
+  }
+}
+
 void handle_key_presses(sf::Event &ev, TetrominoVariant &piece,
                         TetrominoVariant &next_piece, pieceCoords &start_piece,
                         coords &offset, matrixType &matrix, Score &score,
@@ -247,10 +282,12 @@ void handle_event(sf::RenderWindow &window, sf::Event &ev,
 }
 
 void draw_game(sf::RenderWindow &window, matrixType &matrix,
-               TetrominoVariant &piece, sf::Text &title, sf::Text &score_text,
-               sf::Text &score_number, Score &score) {
+               TetrominoVariant &piece, TetrominoVariant &next_piece,
+               sf::Text &title, sf::Text &score_text, sf::Text &score_number,
+               Score &score) {
   draw_board(window);
   draw_cells(window, matrix, piece);
+  draw_next_piece(window, next_piece, WINDOW_X - 170, 200);
   window.draw(title);
   window.draw(score_text);
   score_number.setString(std::to_string(score.get_total_score()));

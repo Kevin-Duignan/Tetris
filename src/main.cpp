@@ -30,19 +30,19 @@ int main() {
   title.setString("Tetris");
   title.setCharacterSize((WINDOW_X + WINDOW_Y) / 20); // in pixels, not points!
   title.setFillColor(sf::Color::Black);
-  title.setPosition(WINDOW_X / 2 - 90, -15);
+  title.setPosition(WINDOW_X / 2 - 90, -10);
 
   score_text.setFont(junegull);
   score_text.setString("Score:");
   score_text.setCharacterSize((WINDOW_X + WINDOW_Y) / 30);
   score_text.setFillColor(sf::Color::Black);
-  score_text.setPosition(WINDOW_X - 190, WINDOW_Y * 0.1);
+  score_text.setPosition(WINDOW_X - 160, WINDOW_Y * 0.1);
 
   score_number.setFont(junegull);
   score_number.setString(std::to_string(score.get_total_score()));
   score_number.setCharacterSize((WINDOW_X + WINDOW_Y) / 40);
   score_number.setFillColor(sf::Color::Black);
-  score_number.setPosition(WINDOW_X - 190, WINDOW_Y * 0.1 + 40);
+  score_number.setPosition(WINDOW_X - 160, WINDOW_Y * 0.1 + 40);
 
   gameover_text.setFont(junegull);
   gameover_text.setString("Game\nOver");
@@ -83,7 +83,8 @@ int main() {
                      matrix, score, gameTick, clock);
       }
       window.clear();
-      draw_game(window, matrix, piece, title, score_text, score_number, score);
+      draw_game(window, matrix, piece, next_piece, title, score_text,
+                score_number, score);
       draw_gameover(window, gameover_text, restart_text);
       window.display();
 
@@ -113,7 +114,8 @@ int main() {
                          non_sealed::active);
 
     window.clear();
-    draw_game(window, matrix, piece, title, score_text, score_number, score);
+    draw_game(window, matrix, piece, next_piece, title, score_text,
+              score_number, score);
     window.display();
   }
 }
