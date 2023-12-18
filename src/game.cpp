@@ -80,10 +80,45 @@ void draw_cells(sf::RenderWindow &window, matrixType &matrix,
   }
 }
 
+void draw_next_piece(sf::RenderWindow &window, TetrominoVariant &piece, float x,
+                     float y) {
+  // Draw the border
+  sf::RectangleShape border(sf::Vector2f(160, 110)); // Adjust size as needed
+  border.setFillColor(sf::Color::White);             // Adjust color as needed
+  border.setPosition(x - 5, y - 5); // Adjust position as needed
+  window.draw(border);
+
+  // Draw the background
+  sf::RectangleShape background(
+      sf::Vector2f(150, 100));               // Adjust size as needed
+  background.setFillColor(sf::Color::Black); // Adjust color as needed
+  background.setPosition(x, y);
+  window.draw(background);
+
+  // Calculate the center of the background
+  float startX = x + background.getSize().x / 6;
+  float startY = y + background.getSize().y / 7;
+
+  // Draw the piece
+  sf::RectangleShape block(sf::Vector2f(CELL_SIZE, CELL_SIZE));
+  auto piece_tag = std::visit([](auto &arg) { return arg.piece_tag; }, piece);
+
+  for (auto [c_x, c_y] :
+       std::visit([](auto &arg) -> pieceCoords { return arg.getBlockCoords(); },
+                  piece)) {
+    auto [r, g, b] = PIECE_COLOURS_MAP.at(piece_tag);
+    block.setFillColor(sf::Color(r, g, b));
+    // Adjust the position to center the piece
+    block.setPosition(startX + (c_x * (CELL_SIZE + GAP)),
+                      startY + (c_y * (CELL_SIZE + GAP)));
+    window.draw(block);
+  }
+}
+
 void handle_key_presses(sf::Event &ev, TetrominoVariant &piece,
-                        pieceCoords &start_piece, coords &offset,
-                        matrixType &matrix, Score &score, sf::Time &gameTick,
-                        sf::Clock &clock) {
+                        TetrominoVariant &next_piece, pieceCoords &start_piece,
+                        coords &offset, matrixType &matrix, Score &score,
+                        sf::Time &gameTick, sf::Clock &clock) {
   // Declaration here to prevent "jump bypasses variable initialisation" error
   bool valid_rotation = true;
   coords prev_offset;
@@ -113,7 +148,7 @@ void handle_key_presses(sf::Event &ev, TetrominoVariant &piece,
         score.drop();
       }
     } while (prev_offset != curr_offset);
-    seal_piece(piece, start_piece, offset, matrix);
+    seal_piece(piece, next_piece, start_piece, offset, matrix);
     break;
   case (sf::Keyboard::Q):
     std::visit([](auto &arg) { arg.rotate(); }, piece);
@@ -147,12 +182,13 @@ void handle_key_presses(sf::Event &ev, TetrominoVariant &piece,
 }
 
 void handle_game_tick(matrixType &matrix, TetrominoVariant &piece,
-                      pieceCoords &start_piece, coords &offset,
-                      sf::Clock &clock, sf::Time &gameTick, Score &score) {
+                      TetrominoVariant &next_piece, pieceCoords &start_piece,
+                      coords &offset, sf::Clock &clock, sf::Time &gameTick,
+                      Score &score) {
 
   if (clock.getElapsedTime() > gameTick) { // game tick
     if (shouldSeal(matrix, start_piece, offset)) {
-      seal_piece(piece, start_piece, offset, matrix);
+      seal_piece(piece, next_piece, start_piece, offset, matrix);
     }
     clock.restart(); // Reset the clock
     movePiece(matrix, start_piece, 'd', offset);
@@ -160,15 +196,17 @@ void handle_game_tick(matrixType &matrix, TetrominoVariant &piece,
   }
 }
 
-void seal_piece(TetrominoVariant &piece, pieceCoords &start_piece,
-                coords &offset, matrixType &matrix) {
+void seal_piece(TetrominoVariant &piece, TetrominoVariant &next_piece,
+                pieceCoords &start_piece, coords &offset, matrixType &matrix) {
   auto piece_type = std::visit([](auto &arg) { return arg.piece_tag; }, piece);
   set_piece_non_sealed(start_piece, offset, matrix, piece_type);
-  piece = std::move(choose_random(tetromino_piece_types));
+  piece = next_piece;
+  next_piece = assign_next_piece(piece);
   start_piece = std::visit(
       [](auto &arg) -> pieceCoords { return arg.getBlockCoords(); }, piece);
   offset = std::make_tuple(COLUMNS / 2 - 2, 0);
 }
+
 void set_piece_non_sealed(pieceCoords &start_piece, coords &offset,
                           matrixType &matrix, cell_type type) {
   for (auto [c_x, c_y] : start_piece) {
@@ -216,24 +254,40 @@ TetrominoVariant choose_random(std::array<TetrominoVariant, 7> pieces) {
   return random_piece;
 }
 
+TetrominoVariant assign_next_piece(TetrominoVariant &piece) {
+  // Choose the next piece (not same as curr piece)
+  BaseTetromino::piece_tag_t curr_piece_tag;
+  BaseTetromino::piece_tag_t next_piece_tag;
+  TetrominoVariant next_piece = choose_random(tetromino_piece_types);
+  do {
+    next_piece = choose_random(tetromino_piece_types);
+    curr_piece_tag = std::visit([](auto &arg) { return arg.piece_tag; }, piece);
+    next_piece_tag =
+        std::visit([](auto &arg) { return arg.piece_tag; }, next_piece);
+  } while (curr_piece_tag == next_piece_tag);
+  return next_piece;
+}
+
 void handle_event(sf::RenderWindow &window, sf::Event &ev,
-                  TetrominoVariant &piece, pieceCoords &start_piece,
-                  coords &offset, matrixType &matrix, Score &score,
-                  sf::Time gameTick, sf::Clock clock) {
+                  TetrominoVariant &piece, TetrominoVariant &next_piece,
+                  pieceCoords &start_piece, coords &offset, matrixType &matrix,
+                  Score &score, sf::Time gameTick, sf::Clock clock) {
   if (ev.type == sf::Event::Closed) {
     window.close();
   }
   if (ev.type == sf::Event::KeyPressed) {
-    handle_key_presses(ev, piece, start_piece, offset, matrix, score, gameTick,
-                       clock);
+    handle_key_presses(ev, piece, next_piece, start_piece, offset, matrix,
+                       score, gameTick, clock);
   }
 }
 
 void draw_game(sf::RenderWindow &window, matrixType &matrix,
-               TetrominoVariant &piece, sf::Text &title, sf::Text &score_text,
-               sf::Text &score_number, Score &score) {
+               TetrominoVariant &piece, TetrominoVariant &next_piece,
+               sf::Text &title, sf::Text &score_text, sf::Text &score_number,
+               Score &score) {
   draw_board(window);
   draw_cells(window, matrix, piece);
+  draw_next_piece(window, next_piece, WINDOW_X - 170, 200);
   window.draw(title);
   window.draw(score_text);
   score_number.setString(std::to_string(score.get_total_score()));
