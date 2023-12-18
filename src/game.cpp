@@ -57,6 +57,9 @@ void draw_cells(sf::RenderWindow &window, matrixType &matrix,
         auto piece_tag = std::get<sealed_piece>(matrix[i][j]);
         auto [r, g, b] = PIECE_COLOURS_MAP.at(piece_tag);
         block.setFillColor(sf::Color(r, g, b));
+        block.setPosition(x, y);
+
+        window.draw(block);
       }
       x += CELL_SIZE + GAP;
     }
