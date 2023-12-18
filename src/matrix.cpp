@@ -53,22 +53,3 @@ bool movePiece(matrixType &matrix, pieceCoords piece, char direction,
   // Otherwise
   return false;
 }
-
-bool shouldSeal(matrixType matrix, pieceCoords piece, coords offset) {
-  // Move piece down
-  for (coords &c : piece) {
-    int newX = std::get<0>(c) + std::get<0>(offset);
-    int newY = std::get<1>(c) + std::get<1>(offset) + 1;
-    bool is_within_board =
-        newX >= 0 && newX < COLUMNS && newY >= 0 && newY < ROWS;
-    bool empty_or_active =
-        std::holds_alternative<non_sealed>(matrix[newY][newX]) &&
-        (std::get<non_sealed>(matrix[newY][newX]) == non_sealed::active ||
-         std::get<non_sealed>(matrix[newY][newX]) == non_sealed::empty);
-
-    if (!is_within_board || !empty_or_active) {
-      return true; // Can't move down
-    }
-  }
-  return false;
-}

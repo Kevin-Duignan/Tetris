@@ -39,6 +39,8 @@ void clear_drop_shadow(matrixType &matrix);
 
 bool is_valid_position(int x, int y, matrixType &matrix);
 
+bool shouldSeal(matrixType matrix, pieceCoords piece, coords offset);
+
 bool handle_game_over(matrixType &matrix);
 
 void handle_event(sf::RenderWindow &window, sf::Event &ev,
