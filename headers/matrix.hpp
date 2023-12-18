@@ -15,7 +15,7 @@ using matrixType = std::array<std::array<cell_type, COLUMNS>, ROWS>;
 using coords = std::tuple<std::uint8_t, std::uint8_t>; // (x, y)
 using pieceCoords = std::vector<coords>;
 
-void movePiece(matrixType &matrix, pieceCoords piece, char direction,
+bool movePiece(matrixType &matrix, pieceCoords piece, char direction,
                coords &offset);
 
 void printGrid(matrixType matrix);

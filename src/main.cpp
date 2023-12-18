@@ -65,7 +65,8 @@ int main() {
   window.setFramerateLimit(144);
 
   sf::Clock clock;                      // starts the clock
-  sf::Time gameTick = sf::seconds(0.1); // game tick every 0.7 seconds
+  sf::Time gameTick = sf::seconds(0.7); // game tick every 0.7 seconds
+  sf::Clock score_clock;
 
   coords offset = std::make_tuple(COLUMNS / 2 - 2, 0); // (x, y)
 
@@ -75,7 +76,8 @@ int main() {
     if (handle_game_over(matrix)) {
 
       while (window.pollEvent(ev)) {
-        handle_event(window, ev, piece, start_piece, offset, matrix, score);
+        handle_event(window, ev, piece, start_piece, offset, matrix, score,
+                     gameTick, clock);
       }
       window.clear();
       draw_game(window, matrix, piece, title, score_text, score_number, score);
@@ -88,7 +90,8 @@ int main() {
     set_piece_non_sealed(start_piece, offset, matrix, non_sealed::empty);
 
     while (window.pollEvent(ev)) {
-      handle_event(window, ev, piece, start_piece, offset, matrix, score);
+      handle_event(window, ev, piece, start_piece, offset, matrix, score,
+                   gameTick, clock);
     }
 
     handle_game_tick(matrix, piece, start_piece, offset, clock, gameTick,
