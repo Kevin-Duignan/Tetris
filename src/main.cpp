@@ -58,7 +58,9 @@ int main() {
 
   //  std::variant<Tetromino<1>, Tetromino<2>, Tetromino<4>>;
   TetrominoVariant piece = choose_random(tetromino_piece_types);
-  auto start_piece = std::visit(
+  TetrominoVariant next_piece = assign_next_piece(piece);
+
+  auto start_piece_coords = std::visit(
       [](auto &arg) -> pieceCoords { return arg.getBlockCoords(); }, piece);
 
   auto window = sf::RenderWindow(sf::VideoMode(WINDOW_X, WINDOW_Y), "Tetris");
@@ -77,8 +79,8 @@ int main() {
                                     // gameover condition after every seal.
 
       while (window.pollEvent(ev)) {
-        handle_event(window, ev, piece, start_piece, offset, matrix, score,
-                     gameTick, clock);
+        handle_event(window, ev, piece, next_piece, start_piece_coords, offset,
+                     matrix, score, gameTick, clock);
       }
       window.clear();
       draw_game(window, matrix, piece, title, score_text, score_number, score);
@@ -88,15 +90,16 @@ int main() {
       continue;
     }
 
-    set_piece_non_sealed(start_piece, offset, matrix, non_sealed::empty);
+    set_piece_non_sealed(start_piece_coords, offset, matrix, non_sealed::empty);
 
     while (window.pollEvent(ev)) {
-      handle_event(window, ev, piece, start_piece, offset, matrix, score,
-                   gameTick, clock);
+      handle_event(window, ev, piece, next_piece, start_piece_coords, offset,
+                   matrix, score, gameTick, clock);
     }
 
-    handle_game_tick(matrix, piece, start_piece, offset, clock, gameTick,
-                     score);
+    handle_game_tick(matrix, piece, next_piece, start_piece_coords, offset,
+                     clock, gameTick, score);
+
     int cleared = clear_rows(matrix);
     if (cleared > 0) {
       score.clear(cleared);
@@ -106,7 +109,8 @@ int main() {
     }
 
     // Fill it back with new offset
-    set_piece_non_sealed(start_piece, offset, matrix, non_sealed::active);
+    set_piece_non_sealed(start_piece_coords, offset, matrix,
+                         non_sealed::active);
 
     window.clear();
     draw_game(window, matrix, piece, title, score_text, score_number, score);
