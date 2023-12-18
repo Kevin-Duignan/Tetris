@@ -2,17 +2,18 @@
 #include <SFML/Graphics.hpp>
 #include <map>
 
-const sf::Color PASTEL_YELLOW_LIGHT = sf::Color(225, 196, 135);
-const sf::Color PASTEL_YELLOW_DARK = sf::Color(153, 121, 80);
-const sf::Color BROWN = sf::Color(75, 64, 53);
+// Screen colour
+const sf::Color LIGHT_GRAY = sf::Color(119, 136, 153);  // Light Slate Gray
+const sf::Color DARK_GRAY = sf::Color(47, 79, 79);      // Dark Slate Gray
+const sf::Color MIDNIGHT_BLUE = sf::Color(25, 25, 112); // Midnight Blue
 
 using RGB = std::tuple<std::uint8_t, std::uint8_t, std::uint8_t>;
 
 // Piece colours (not initialized with sf::Color yet so can use constexpr)
-constexpr RGB GREEN = std::make_tuple(76, 187, 23);
-constexpr RGB BLUE = std::make_tuple(70, 130, 180);   // Darker pastel blue
-constexpr RGB PURPLE = std::make_tuple(127, 92, 199); // Darker pastel purple
-constexpr RGB RED = std::make_tuple(205, 92, 92);     // Darker pastel red
-constexpr RGB ORANGE = std::make_tuple(255, 140, 0);  // Darker pastel orange
-constexpr RGB PINK = std::make_tuple(255, 105, 180);  // Darker pastel pink
-constexpr RGB CYAN = std::make_tuple(0, 139, 139);    // Darker pastel cyan
+constexpr RGB GREEN = std::make_tuple(152, 251, 152);  // Pale Green
+constexpr RGB BLUE = std::make_tuple(135, 206, 235);   // Sky Blue
+constexpr RGB PURPLE = std::make_tuple(221, 160, 221); // Plum
+constexpr RGB RED = std::make_tuple(250, 128, 114);    // Salmon
+constexpr RGB ORANGE = std::make_tuple(255, 165, 0);   // Orange
+constexpr RGB PINK = std::make_tuple(255, 182, 193);   // Light Pink
+constexpr RGB CYAN = std::make_tuple(224, 255, 255);   // Light Cyan
