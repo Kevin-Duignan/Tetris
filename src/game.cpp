@@ -10,20 +10,20 @@ void print_coords(const coords &c) {
 void draw_board(sf::RenderWindow &window) {
 
   sf::RectangleShape background(sf::Vector2f(WINDOW_X, WINDOW_Y));
-  background.setFillColor(sf::Color(PASTEL_YELLOW_LIGHT));
+  background.setFillColor(sf::Color(LIGHT_GRAY));
   window.draw(background);
 
   sf::RectangleShape matrix_border(
       sf::Vector2f((CELL_SIZE + GAP) * COLUMNS + GAP * 3,
                    (CELL_SIZE + GAP) * ROWS + GAP * 3));
   matrix_border.setPosition(LEFT_BORDER - GAP, TOP_BORDER - GAP);
-  matrix_border.setFillColor(sf::Color(BROWN));
+  matrix_border.setFillColor(sf::Color(MIDNIGHT_BLUE));
   window.draw(matrix_border);
 
   sf::RectangleShape matrix_background(sf::Vector2f(
       (CELL_SIZE + GAP) * COLUMNS - GAP, (CELL_SIZE + GAP) * ROWS - GAP));
   matrix_background.setPosition(LEFT_BORDER + GAP, TOP_BORDER + GAP);
-  matrix_background.setFillColor(sf::Color(PASTEL_YELLOW_DARK));
+  matrix_background.setFillColor(sf::Color(DARK_GRAY));
   window.draw(matrix_background);
 }
 
@@ -38,13 +38,13 @@ void draw_cells(sf::RenderWindow &window, matrixType &matrix,
   auto piece_tag = std::visit([](auto &arg) { return arg.piece_tag; }, piece);
 
   sf::RectangleShape background(sf::Vector2f(WINDOW_X, WINDOW_Y));
-  background.setFillColor(sf::Color(PASTEL_YELLOW_LIGHT));
+  background.setFillColor(sf::Color(LIGHT_GRAY));
   window.draw(background);
 
   sf::RectangleShape matrix_background(sf::Vector2f(
       (CELL_SIZE + GAP) * COLUMNS + GAP, (CELL_SIZE + GAP) * ROWS + GAP));
   matrix_background.setPosition(LEFT_BORDER, TOP_BORDER);
-  matrix_background.setFillColor(sf::Color(PASTEL_YELLOW_DARK));
+  matrix_background.setFillColor(sf::Color(DARK_GRAY));
   window.draw(matrix_background);
 
   float x = GAP + LEFT_BORDER, y = GAP + TOP_BORDER;
@@ -104,6 +104,7 @@ void handle_key_presses(sf::Event &ev, TetrominoVariant &piece,
       movePiece(matrix, start_piece, 'd', offset);
       curr_offset = offset;
     } while (prev_offset != curr_offset);
+    score.drop();
     break;
     offset = curr_offset;
   case (sf::Keyboard::Q):
@@ -135,17 +136,17 @@ void handle_game_tick(matrixType &matrix, TetrominoVariant &piece,
                       pieceCoords &start_piece, coords &offset,
                       sf::Clock &clock, sf::Time &gameTick, Score &score) {
 
-  if (shouldSeal(matrix, start_piece, offset)) {
-    auto piece_type =
-        std::visit([](auto &arg) { return arg.piece_tag; }, piece);
-    set_piece_non_sealed(start_piece, offset, matrix, piece_type);
-    piece = std::move(choose_random(tetromino_piece_types));
-    start_piece = std::visit(
-        [](auto &arg) -> pieceCoords { return arg.getBlockCoords(); }, piece);
-    offset = std::make_tuple(COLUMNS / 2 - 2, 0);
-  }
   if (clock.getElapsedTime() > gameTick) { // game tick
-    clock.restart();                       // Reset the clock
+    if (shouldSeal(matrix, start_piece, offset)) {
+      auto piece_type =
+          std::visit([](auto &arg) { return arg.piece_tag; }, piece);
+      set_piece_non_sealed(start_piece, offset, matrix, piece_type);
+      piece = std::move(choose_random(tetromino_piece_types));
+      start_piece = std::visit(
+          [](auto &arg) -> pieceCoords { return arg.getBlockCoords(); }, piece);
+      offset = std::make_tuple(COLUMNS / 2 - 2, 0);
+    }
+    clock.restart(); // Reset the clock
     movePiece(matrix, start_piece, 'd', offset);
     score.tick();
   }
