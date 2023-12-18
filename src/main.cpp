@@ -10,7 +10,6 @@
 #include <string>
 
 using namespace std::literals;
-
 int main() {
   Score score;
   matrixType matrix;
@@ -74,36 +73,20 @@ int main() {
     sf::Event ev;
 
     if (handle_game_over(matrix)) {
-
-      draw_cells(window, matrix, piece);
-      window.draw(title);
-      window.draw(score_text);
-      score_number.setString(std::to_string(score.get_total_score()));
-      window.draw(score_number);
-      draw_gameover(window);
-      window.draw(gameover_text);
-      window.draw(restart_text);
-      window.display();
+      draw_game(window, matrix, piece, title, score_text, score_number, score);
+      draw_gameover(window, gameover_text, restart_text);
       while (window.pollEvent(ev)) {
-        if (ev.type == sf::Event::Closed) {
-          window.close();
-        }
-        if (ev.type == sf::Event::KeyPressed) {
-          handle_key_presses(ev, piece, start_piece, offset, matrix, score);
-        }
+        handle_event(window, ev, piece, start_piece, offset, matrix, score);
       }
       continue;
     }
+
     set_piece_non_sealed(start_piece, offset, matrix, non_sealed::empty);
 
     while (window.pollEvent(ev)) {
-      if (ev.type == sf::Event::Closed) {
-        window.close();
-      }
-      if (ev.type == sf::Event::KeyPressed) {
-        handle_key_presses(ev, piece, start_piece, offset, matrix, score);
-      }
+      handle_event(window, ev, piece, start_piece, offset, matrix, score);
     }
+
     handle_game_tick(matrix, piece, start_piece, offset, clock, gameTick,
                      score);
     int cleared = clear_rows(matrix);
@@ -113,17 +96,11 @@ int main() {
     if (cleared == 4) {
       score.tetris();
     }
+
     // Fill it back with new offset
     set_piece_non_sealed(start_piece, offset, matrix, non_sealed::active);
 
-    window.clear();
-
-    draw_cells(window, matrix, piece);
-    window.draw(title);
-    window.draw(score_text);
-    score_number.setString(std::to_string(score.get_total_score()));
-    window.draw(score_number);
-    window.display();
+    draw_game(window, matrix, piece, title, score_text, score_number, score);
   }
 }
 
