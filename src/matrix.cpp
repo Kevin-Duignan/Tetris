@@ -1,6 +1,6 @@
 #include "../headers/matrix.hpp"
 
-void movePiece(matrixType &matrix, pieceCoords piece, char direction,
+bool movePiece(matrixType &matrix, pieceCoords piece, char direction,
                coords &offset) {
 
   // Function to check if the new position is valid
@@ -19,10 +19,11 @@ void movePiece(matrixType &matrix, pieceCoords piece, char direction,
       int newX = c_x + offset_x - 1;
       int newY = c_y + offset_y;
       if (!isValidPosition(newX, newY)) {
-        return; // Can't move left
+        return false; // Can't move left
       }
     }
     offset = std::make_tuple(offset_x - 1, offset_y);
+    return true;
   }
 
   // Move piece down
@@ -31,10 +32,11 @@ void movePiece(matrixType &matrix, pieceCoords piece, char direction,
       int newX = c_x + offset_x;
       int newY = c_y + offset_y + 1;
       if (!isValidPosition(newX, newY)) {
-        return; // Can't move down
+        return false; // Can't move down
       }
     }
     offset = std::make_tuple(offset_x, offset_y + 1);
+    return true;
   }
 
   // Move piece right
@@ -43,11 +45,14 @@ void movePiece(matrixType &matrix, pieceCoords piece, char direction,
       int newX = c_x + offset_x + 1;
       int newY = c_y + offset_y;
       if (!isValidPosition(newX, newY)) {
-        return; // Can't move right
+        return false; // Can't move right
       }
     }
     offset = std::make_tuple(offset_x + 1, offset_y);
+    return true;
   }
+  // Otherwise
+  return false;
 }
 
 bool shouldSeal(matrixType matrix, pieceCoords piece, coords offset) {

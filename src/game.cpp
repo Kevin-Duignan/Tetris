@@ -78,7 +78,8 @@ void draw_cells(sf::RenderWindow &window, matrixType &matrix,
 
 void handle_key_presses(sf::Event &ev, TetrominoVariant &piece,
                         pieceCoords &start_piece, coords &offset,
-                        matrixType &matrix, Score &score) {
+                        matrixType &matrix, Score &score, sf::Time &gameTick,
+                        sf::Clock &clock) {
   // Declaration here to prevent "jump bypasses variable initialisation" error
   bool valid_rotation = true;
   coords prev_offset;
@@ -90,8 +91,9 @@ void handle_key_presses(sf::Event &ev, TetrominoVariant &piece,
     break;
   case sf::Keyboard::S:
   case sf::Keyboard::Down:
-    movePiece(matrix, start_piece, 'd', offset);
-    score.tick();
+    if (movePiece(matrix, start_piece, 'd', offset)) {
+      score.tick();
+    }
     break;
   case sf::Keyboard::A:
   case sf::Keyboard::Left:
@@ -103,8 +105,11 @@ void handle_key_presses(sf::Event &ev, TetrominoVariant &piece,
       prev_offset = offset;
       movePiece(matrix, start_piece, 'd', offset);
       curr_offset = offset;
+      if (prev_offset != curr_offset) {
+        score.drop();
+      }
     } while (prev_offset != curr_offset);
-    score.drop();
+    seal_piece(piece, start_piece, offset, matrix);
     break;
     offset = curr_offset;
   case (sf::Keyboard::Q):
@@ -138,13 +143,7 @@ void handle_game_tick(matrixType &matrix, TetrominoVariant &piece,
 
   if (clock.getElapsedTime() > gameTick) { // game tick
     if (shouldSeal(matrix, start_piece, offset)) {
-      auto piece_type =
-          std::visit([](auto &arg) { return arg.piece_tag; }, piece);
-      set_piece_non_sealed(start_piece, offset, matrix, piece_type);
-      piece = std::move(choose_random(tetromino_piece_types));
-      start_piece = std::visit(
-          [](auto &arg) -> pieceCoords { return arg.getBlockCoords(); }, piece);
-      offset = std::make_tuple(COLUMNS / 2 - 2, 0);
+      seal_piece(piece, start_piece, offset, matrix);
     }
     clock.restart(); // Reset the clock
     movePiece(matrix, start_piece, 'd', offset);
@@ -152,6 +151,15 @@ void handle_game_tick(matrixType &matrix, TetrominoVariant &piece,
   }
 }
 
+void seal_piece(TetrominoVariant &piece, pieceCoords &start_piece,
+                coords &offset, matrixType &matrix) {
+  auto piece_type = std::visit([](auto &arg) { return arg.piece_tag; }, piece);
+  set_piece_non_sealed(start_piece, offset, matrix, piece_type);
+  piece = std::move(choose_random(tetromino_piece_types));
+  start_piece = std::visit(
+      [](auto &arg) -> pieceCoords { return arg.getBlockCoords(); }, piece);
+  offset = std::make_tuple(COLUMNS / 2 - 2, 0);
+}
 void set_piece_non_sealed(pieceCoords &start_piece, coords &offset,
                           matrixType &matrix, cell_type type) {
   for (auto [c_x, c_y] : start_piece) {

@@ -1,8 +1,8 @@
 #pragma once
 
 constexpr int GAP = 4;
-constexpr int ROWS = 20;
-constexpr int COLUMNS = 12;
+constexpr int ROWS = 30;
+constexpr int COLUMNS = 15;
 constexpr int CELL_SIZE = 25;
 constexpr int LEFT_BORDER = 30, RIGHT_BORDER = 200, TOP_BORDER = 60,
               BOTTOM_BORDER = 30;
