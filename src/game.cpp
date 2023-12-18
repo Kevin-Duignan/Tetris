@@ -241,6 +241,18 @@ void clear_drop_shadow(matrixType &matrix) {
     }
 }
 
+bool shouldSeal(matrixType matrix, pieceCoords piece, coords offset) {
+  // Move piece down
+  for (coords &c : piece) {
+    int newX = std::get<0>(c) + std::get<0>(offset);
+    int newY = std::get<1>(c) + std::get<1>(offset) + 1;
+    if (!is_valid_position(newX, newY, matrix)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 bool is_valid_position(int x, int y, matrixType &matrix) {
   bool is_within_board = x >= 0 && x < COLUMNS && y >= 0 && y < ROWS;
   bool is_empty = std::holds_alternative<non_sealed>(matrix[y][x]);
