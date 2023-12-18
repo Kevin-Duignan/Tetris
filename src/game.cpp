@@ -64,6 +64,13 @@ void draw_cells(sf::RenderWindow &window, matrixType &matrix,
         window.draw(block);
       }
 
+      else if (std::holds_alternative<non_sealed>(cell) &&
+               std::get<non_sealed>(cell) == non_sealed::drop_shadow) {
+        block.setFillColor(sf::Color(100, 100, 100, 100)); // Translucent
+        block.setPosition(x, y);
+        window.draw(block);
+      }
+
       else if (std::holds_alternative<sealed_piece>(cell)) {
         // Draw the colour of previous sealed pieces
         auto piece_tag = std::get<sealed_piece>(matrix[i][j]);
@@ -215,10 +222,31 @@ void set_piece_non_sealed(pieceCoords &start_piece, coords &offset,
   }
 }
 
+coords calculate_drop_position(matrixType &matrix, pieceCoords &start_piece,
+                               coords &offset) {
+  coords drop_offset = offset;
+  while (movePiece(matrix, start_piece, 'd', drop_offset)) {
+    // Keep moving the piece down until it can't move any further
+  }
+  return drop_offset;
+}
+
+void clear_drop_shadow(matrixType &matrix) {
+  for (auto &row : matrix)
+    for (auto &cell : row) {
+      if (std::holds_alternative<non_sealed>(cell) &&
+          std::get<non_sealed>(cell) == non_sealed::drop_shadow) {
+        cell = non_sealed::empty;
+      }
+    }
+}
+
 bool is_valid_position(int x, int y, matrixType &matrix) {
   bool is_within_board = x >= 0 && x < COLUMNS && y >= 0 && y < ROWS;
-  bool is_empty = std::holds_alternative<non_sealed>(matrix[y][x]) &&
-                  std::get<non_sealed>(matrix[y][x]) == non_sealed::empty;
+  bool is_empty =
+      std::holds_alternative<non_sealed>(matrix[y][x]) &&
+      (std::get<non_sealed>(matrix[y][x]) == non_sealed::empty ||
+       std::get<non_sealed>(matrix[y][x]) == non_sealed::drop_shadow);
   return is_within_board && is_empty;
 }
 

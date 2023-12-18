@@ -32,6 +32,11 @@ void seal_piece(TetrominoVariant &piece, TetrominoVariant &next_piece,
 void set_piece_non_sealed(pieceCoords &start_piece, coords &offset,
                           matrixType &matrix, cell_type type);
 
+coords calculate_drop_position(matrixType &matrix, pieceCoords &start_piece,
+                               coords &offset);
+
+void clear_drop_shadow(matrixType &matrix);
+
 bool is_valid_position(int x, int y, matrixType &matrix);
 
 bool handle_game_over(matrixType &matrix);

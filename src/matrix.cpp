@@ -6,9 +6,8 @@ bool movePiece(matrixType &matrix, pieceCoords piece, char direction,
   // Function to check if the new position is valid
   auto isValidPosition = [&](int x, int y) { // lambda!
     bool is_within_board = x >= 0 && x < COLUMNS && y >= 0 && y < ROWS;
-    bool is_empty = std::holds_alternative<non_sealed>(matrix[y][x]) &&
-                    std::get<non_sealed>(matrix[y][x]) == non_sealed::empty;
-    return is_within_board && is_empty;
+    bool is_non_sealed = std::holds_alternative<non_sealed>(matrix[y][x]);
+    return is_within_board && is_non_sealed;
   };
 
   auto [offset_x, offset_y] = offset;

@@ -7,7 +7,7 @@
 #include <tuple>
 #include <vector>
 
-enum class non_sealed : short { empty, active };
+enum class non_sealed : short { empty, active, drop_shadow };
 using sealed_piece = BaseTetromino::piece_tag_t;
 using cell_type = std::variant<non_sealed, sealed_piece>;
 
