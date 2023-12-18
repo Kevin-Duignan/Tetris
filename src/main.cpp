@@ -3,7 +3,9 @@
 #include "../headers/game.hpp"
 #include "../headers/score.hpp"
 #include <SFML/Graphics.hpp>
+#include <algorithm>
 #include <cmath>
+
 #include <iostream>
 #include <string>
 
@@ -15,9 +17,13 @@ int main() {
   for (auto &row : matrix) {
     std::fill(row.begin(), row.end(), non_sealed::empty);
   }
-  sf::Text title, score_text, score_number;
+  sf::Text title, score_text, score_number, gameover_text, restart_text;
   sf::Font junegull;
   if (!junegull.loadFromFile("media/junegull.ttf")) {
+    // error...
+  }
+  sf::Font arial;
+  if (!arial.loadFromFile("media/arial.ttf")) {
     // error...
   }
 
@@ -26,6 +32,7 @@ int main() {
   title.setCharacterSize((WINDOW_X + WINDOW_Y) / 20); // in pixels, not points!
   title.setFillColor(sf::Color::Black);
   title.setPosition(WINDOW_X / 2 - 90, -15);
+
   score_text.setFont(junegull);
   score_text.setString("Score:");
   score_text.setCharacterSize((WINDOW_X + WINDOW_Y) / 30);
@@ -38,6 +45,18 @@ int main() {
   score_number.setFillColor(sf::Color::Black);
   score_number.setPosition(WINDOW_X - 190, WINDOW_Y * 0.1 + 40);
 
+  gameover_text.setFont(junegull);
+  gameover_text.setString("Game\nOver");
+  gameover_text.setCharacterSize((WINDOW_X + WINDOW_Y) / 15);
+  gameover_text.setFillColor(sf::Color::Black);
+  gameover_text.setPosition(LEFT_BORDER - GAP + 90, TOP_BORDER + 80);
+
+  restart_text.setFont(junegull);
+  restart_text.setString("Press r to restart");
+  restart_text.setCharacterSize((WINDOW_X + WINDOW_Y) / 40);
+  restart_text.setFillColor(sf::Color::Black);
+  restart_text.setPosition(LEFT_BORDER - GAP + 53, TOP_BORDER + 320);
+
   //  std::variant<Tetromino<1>, Tetromino<2>, Tetromino<4>>;
   TetrominoVariant piece = choose_random(tetromino_piece_types);
   auto start_piece = std::visit(
@@ -47,19 +66,36 @@ int main() {
   window.setFramerateLimit(144);
 
   sf::Clock clock;                      // starts the clock
-  sf::Time gameTick = sf::seconds(0.7); // game tick every 0.7 seconds
+  sf::Time gameTick = sf::seconds(0.1); // game tick every 0.7 seconds
 
   coords offset = std::make_tuple(COLUMNS / 2 - 2, 0); // (x, y)
 
   while (window.isOpen()) {
+    sf::Event ev;
+
     if (handle_game_over(matrix)) {
-      // TODO: add restart logic here
-      // Stop everything for now
-      break;
+
+      draw_cells(window, matrix, piece);
+      window.draw(title);
+      window.draw(score_text);
+      score_number.setString(std::to_string(score.get_total_score()));
+      window.draw(score_number);
+      draw_gameover(window);
+      window.draw(gameover_text);
+      window.draw(restart_text);
+      window.display();
+      while (window.pollEvent(ev)) {
+        if (ev.type == sf::Event::Closed) {
+          window.close();
+        }
+        if (ev.type == sf::Event::KeyPressed) {
+          handle_key_presses(ev, piece, start_piece, offset, matrix, score);
+        }
+      }
+      continue;
     }
     set_piece_non_sealed(start_piece, offset, matrix, non_sealed::empty);
 
-    sf::Event ev;
     while (window.pollEvent(ev)) {
       if (ev.type == sf::Event::Closed) {
         window.close();
@@ -87,7 +123,6 @@ int main() {
     window.draw(score_text);
     score_number.setString(std::to_string(score.get_total_score()));
     window.draw(score_number);
-
     window.display();
   }
 }
@@ -131,16 +166,16 @@ void initialise_texts(sf::Text &title, sf::Text &score_text,
   title.setFont(junegull);
   title.setString("Tetris");
   title.setCharacterSize(
-      floor((window_x + window_y) / 20)); // in pixels, not points!
+      floor((WINDOW_X + WINDOW_Y) / 20)); // in pixels, not points!
   title.setFillColor(sf::Color::Black);
-  title.setPosition(window_x / 2 - 90, -15);
+  title.setPosition(WINDOW_X / 2 - 90, -15);
 
   score_text.setFont(junegull);
   score_text.setString("Score:");
-  score_text.setCharacterSize(floor((window_x + window_y) / 20));
+  score_text.setCharacterSize(floor((WINDOW_X + WINDOW_Y) / 20));
 
   score_number.setFont(junegull);
   score_number.setString("0");
-  score_text.setCharacterSize(floor((window_x + window_y) / 20));
+  score_text.setCharacterSize(floor((WINDOW_X + WINDOW_Y) / 20));
 }
 */

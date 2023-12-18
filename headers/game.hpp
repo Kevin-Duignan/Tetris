@@ -9,6 +9,8 @@
 void draw_cells(sf::RenderWindow &window, matrixType &matrix,
                 TetrominoVariant &piece);
 
+void draw_gameover(sf::RenderWindow &window);
+
 void handle_key_presses(sf::Event &ev, TetrominoVariant &piece,
                         pieceCoords &start_piece, coords &offset,
                         matrixType &matrix, Score &score);

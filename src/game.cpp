@@ -7,6 +7,18 @@ void print_coords(const coords &c) {
             << static_cast<int>(std::get<1>(c)) << ")";
 }
 
+void draw_gameover(sf::RenderWindow &window) {
+  sf::RectangleShape box(sf::Vector2f(280, 200));
+  box.setFillColor(sf::Color(LIGHT_GRAY));
+  box.setPosition(LEFT_BORDER - GAP + 40, TOP_BORDER + 80);
+  window.draw(box);
+
+  sf::RectangleShape restart_box(sf::Vector2f(280, 60));
+  restart_box.setFillColor(sf::Color(LIGHT_GRAY));
+  restart_box.setPosition(LEFT_BORDER - GAP + 40, TOP_BORDER + 310);
+  window.draw(restart_box);
+}
+
 void draw_board(sf::RenderWindow &window) {
 
   sf::RectangleShape background(sf::Vector2f(WINDOW_X, WINDOW_Y));
@@ -106,7 +118,6 @@ void handle_key_presses(sf::Event &ev, TetrominoVariant &piece,
     } while (prev_offset != curr_offset);
     score.drop();
     break;
-    offset = curr_offset;
   case (sf::Keyboard::Q):
     std::visit([](auto &arg) { arg.rotate(); }, piece);
     for (auto &[c_x, c_y] : std::visit(
@@ -127,6 +138,12 @@ void handle_key_presses(sf::Event &ev, TetrominoVariant &piece,
           [](auto &arg) -> pieceCoords { return arg.getBlockCoords(); }, piece);
     }
     break;
+  case (sf::Keyboard::R):
+    for (auto &row : matrix) {
+      std::fill(row.begin(), row.end(), non_sealed::empty);
+    }
+    offset = std::make_tuple(COLUMNS / 2 - 2, 0);
+    score.reset();
   default:
     break;
   }
