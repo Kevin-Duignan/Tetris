@@ -7,6 +7,18 @@ void print_coords(const coords &c) {
             << static_cast<int>(std::get<1>(c)) << ")";
 }
 
+void draw_gameover(sf::RenderWindow &window) {
+  sf::RectangleShape box(sf::Vector2f(250, 200));
+  box.setFillColor(sf::Color(LIGHT_GRAY));
+  box.setPosition(LEFT_BORDER - GAP + 30, TOP_BORDER + 80);
+  window.draw(box);
+
+  sf::RectangleShape restart_box(sf::Vector2f(250, 60));
+  restart_box.setFillColor(sf::Color(LIGHT_GRAY));
+  restart_box.setPosition(LEFT_BORDER - GAP + 30, TOP_BORDER + 310);
+  window.draw(restart_box);
+}
+
 void draw_board(sf::RenderWindow &window) {
 
   sf::RectangleShape background(sf::Vector2f(WINDOW_X, WINDOW_Y));
@@ -14,8 +26,8 @@ void draw_board(sf::RenderWindow &window) {
   window.draw(background);
 
   sf::RectangleShape matrix_border(
-      sf::Vector2f((CELL_SIZE + GAP) * COLUMNS + GAP * 3,
-                   (CELL_SIZE + GAP) * (ROWS - 2) + GAP * 3));
+      sf::Vector2f((CELL_SIZE + GAP) * COLUMNS + GAP * 3 + 3,
+                   (CELL_SIZE + GAP) * (ROWS - 2) + GAP * 3 + 3));
   matrix_border.setPosition(LEFT_BORDER - GAP, TOP_BORDER - GAP);
   matrix_border.setFillColor(sf::Color(MIDNIGHT_BLUE));
   window.draw(matrix_border);
@@ -103,7 +115,6 @@ void handle_key_presses(sf::Event &ev, TetrominoVariant &piece,
     } while (prev_offset != curr_offset);
     seal_piece(piece, start_piece, offset, matrix);
     break;
-    offset = curr_offset;
   case (sf::Keyboard::Q):
     std::visit([](auto &arg) { arg.rotate(); }, piece);
     for (auto &[c_x, c_y] : std::visit(
@@ -124,6 +135,12 @@ void handle_key_presses(sf::Event &ev, TetrominoVariant &piece,
           [](auto &arg) -> pieceCoords { return arg.getBlockCoords(); }, piece);
     }
     break;
+  case (sf::Keyboard::R):
+    for (auto &row : matrix) {
+      std::fill(row.begin(), row.end(), non_sealed::empty);
+    }
+    offset = std::make_tuple(COLUMNS / 2 - 2, 0);
+    score.reset();
   default:
     break;
   }
@@ -167,12 +184,15 @@ bool is_valid_position(int x, int y, matrixType &matrix) {
   return is_within_board && is_empty;
 }
 
-bool handle_game_over(matrixType &matrix) {
-  auto first_row = matrix[0];
-  for (auto &cell : first_row) {
-    if (std::holds_alternative<sealed_piece>(cell)) {
-      std::cout << "Game Over" << std::endl;
-      return true;
+bool handle_game_over(matrixType &matrix) { // If any out of bounds row has a
+                                            // sealed piece, you lose.
+  std::array<cell_type, COLUMNS> ceiling_rows[2] = {
+      matrix[0], matrix[1]}; // rows that are out of bounds
+  for (auto &row : ceiling_rows) {
+    for (auto &cell : row) {
+      if (std::holds_alternative<sealed_piece>(cell)) {
+        return true;
+      }
     }
   }
   return false;
@@ -194,4 +214,35 @@ TetrominoVariant choose_random(std::array<TetrominoVariant, 7> pieces) {
       },
       random_piece_t);
   return random_piece;
+}
+
+void handle_event(sf::RenderWindow &window, sf::Event &ev,
+                  TetrominoVariant &piece, pieceCoords &start_piece,
+                  coords &offset, matrixType &matrix, Score &score,
+                  sf::Time gameTick, sf::Clock clock) {
+  if (ev.type == sf::Event::Closed) {
+    window.close();
+  }
+  if (ev.type == sf::Event::KeyPressed) {
+    handle_key_presses(ev, piece, start_piece, offset, matrix, score, gameTick,
+                       clock);
+  }
+}
+
+void draw_game(sf::RenderWindow &window, matrixType &matrix,
+               TetrominoVariant &piece, sf::Text &title, sf::Text &score_text,
+               sf::Text &score_number, Score &score) {
+  draw_board(window);
+  draw_cells(window, matrix, piece);
+  window.draw(title);
+  window.draw(score_text);
+  score_number.setString(std::to_string(score.get_total_score()));
+  window.draw(score_number);
+}
+
+void draw_gameover(sf::RenderWindow &window, sf::Text &gameover_text,
+                   sf::Text &restart_text) {
+  draw_gameover(window);
+  window.draw(gameover_text);
+  window.draw(restart_text);
 }

@@ -36,6 +36,7 @@ public:
   void drop() { total_score += drop_score; }
   void clear(int cleared) { total_score += clear_score * cleared; }
   void tetris() { total_score += tetris_score; }
+  void reset() { total_score = 0; }
 
   // Getters, setters
   int get_total_score() const { return total_score; }
