@@ -22,7 +22,7 @@ private:
 
 public:
   // Constructor
-  Score(int tick = 1, int drop = ROWS * 1.5, int clear = ROWS * 3,
+  Score(int tick = 1, int drop = 2, int clear = ROWS * 3,
         int tetris = ROWS * 3) // based on rows so that is remains fair if you
                                // change the amount of rows.
       : tick_score(tick), drop_score(drop), clear_score(clear),

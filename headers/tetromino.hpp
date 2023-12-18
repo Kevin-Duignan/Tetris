@@ -10,7 +10,7 @@
 #include <tuple>
 #include <variant>
 struct BaseTetromino {
-  enum class piece_tag_t : short { I = 3, J, L, O, S, T, Z };
+  enum class piece_tag_t : short { I = 2, J, L, O, S, T, Z };
 
   constexpr explicit BaseTetromino(piece_tag_t tag) : piece_tag(tag) {}
 

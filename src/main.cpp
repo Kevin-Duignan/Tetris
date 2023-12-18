@@ -48,6 +48,7 @@ int main() {
 
   sf::Clock clock;                      // starts the clock
   sf::Time gameTick = sf::seconds(0.7); // game tick every 0.7 seconds
+  sf::Clock score_clock;
 
   coords offset = std::make_tuple(COLUMNS / 2 - 2, 0); // (x, y)
 
@@ -65,7 +66,8 @@ int main() {
         window.close();
       }
       if (ev.type == sf::Event::KeyPressed) {
-        handle_key_presses(ev, piece, start_piece, offset, matrix, score);
+        handle_key_presses(ev, piece, start_piece, offset, matrix, score,
+                           gameTick, clock);
       }
     }
     handle_game_tick(matrix, piece, start_piece, offset, clock, gameTick,
@@ -82,6 +84,7 @@ int main() {
 
     window.clear();
 
+    draw_board(window);
     draw_cells(window, matrix, piece);
     window.draw(title);
     window.draw(score_text);
