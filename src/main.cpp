@@ -73,11 +73,15 @@ int main() {
     sf::Event ev;
 
     if (handle_game_over(matrix)) {
-      draw_game(window, matrix, piece, title, score_text, score_number, score);
-      draw_gameover(window, gameover_text, restart_text);
+
       while (window.pollEvent(ev)) {
         handle_event(window, ev, piece, start_piece, offset, matrix, score);
       }
+      window.clear();
+      draw_game(window, matrix, piece, title, score_text, score_number, score);
+      draw_gameover(window, gameover_text, restart_text);
+      window.display();
+
       continue;
     }
 
@@ -100,7 +104,9 @@ int main() {
     // Fill it back with new offset
     set_piece_non_sealed(start_piece, offset, matrix, non_sealed::active);
 
+    window.clear();
     draw_game(window, matrix, piece, title, score_text, score_number, score);
+    window.display();
   }
 }
 

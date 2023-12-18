@@ -227,13 +227,11 @@ void handle_event(sf::RenderWindow &window, sf::Event &ev,
 void draw_game(sf::RenderWindow &window, matrixType &matrix,
                TetrominoVariant &piece, sf::Text &title, sf::Text &score_text,
                sf::Text &score_number, Score &score) {
-  window.clear();
   draw_cells(window, matrix, piece);
   window.draw(title);
   window.draw(score_text);
   score_number.setString(std::to_string(score.get_total_score()));
   window.draw(score_number);
-  window.display();
 }
 
 void draw_gameover(sf::RenderWindow &window, sf::Text &gameover_text,
