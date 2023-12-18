@@ -136,17 +136,17 @@ void handle_game_tick(matrixType &matrix, TetrominoVariant &piece,
                       pieceCoords &start_piece, coords &offset,
                       sf::Clock &clock, sf::Time &gameTick, Score &score) {
 
-  if (shouldSeal(matrix, start_piece, offset)) {
-    auto piece_type =
-        std::visit([](auto &arg) { return arg.piece_tag; }, piece);
-    set_piece_non_sealed(start_piece, offset, matrix, piece_type);
-    piece = std::move(choose_random(tetromino_piece_types));
-    start_piece = std::visit(
-        [](auto &arg) -> pieceCoords { return arg.getBlockCoords(); }, piece);
-    offset = std::make_tuple(COLUMNS / 2 - 2, 0);
-  }
   if (clock.getElapsedTime() > gameTick) { // game tick
-    clock.restart();                       // Reset the clock
+    if (shouldSeal(matrix, start_piece, offset)) {
+      auto piece_type =
+          std::visit([](auto &arg) { return arg.piece_tag; }, piece);
+      set_piece_non_sealed(start_piece, offset, matrix, piece_type);
+      piece = std::move(choose_random(tetromino_piece_types));
+      start_piece = std::visit(
+          [](auto &arg) -> pieceCoords { return arg.getBlockCoords(); }, piece);
+      offset = std::make_tuple(COLUMNS / 2 - 2, 0);
+    }
+    clock.restart(); // Reset the clock
     movePiece(matrix, start_piece, 'd', offset);
     score.tick();
   }
