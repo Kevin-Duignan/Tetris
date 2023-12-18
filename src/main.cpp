@@ -71,6 +71,7 @@ int main() {
   sf::Clock score_clock;
 
   coords offset = std::make_tuple(COLUMNS / 2 - 2, 0); // (x, y)
+  coords drop_offset = offset; // Initialize drop_position
 
   while (window.isOpen()) {
     sf::Event ev;
@@ -90,8 +91,15 @@ int main() {
 
       continue;
     }
+    // clang-format off
+    clear_drop_shadow(matrix);
+    
+    // Calculate and show drop shadow
+    drop_offset = calculate_drop_position(matrix, start_piece_coords, offset);
+    set_piece_non_sealed(start_piece_coords, drop_offset, matrix, non_sealed::drop_shadow);
 
     set_piece_non_sealed(start_piece_coords, offset, matrix, non_sealed::empty);
+    // clang-format on
 
     while (window.pollEvent(ev)) {
       handle_event(window, ev, piece, next_piece, start_piece_coords, offset,
