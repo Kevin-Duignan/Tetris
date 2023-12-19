@@ -59,7 +59,7 @@ int main() {
   //  std::variant<Tetromino<1>, Tetromino<2>, Tetromino<4>>;
   TetrominoVariant piece = choose_random(tetromino_piece_types);
   TetrominoVariant next_piece = assign_next_piece(piece);
-
+  std::optional<TetrominoVariant> saved_piece = std::nullopt;
   auto start_piece_coords = std::visit(
       [](auto &arg) -> pieceCoords { return arg.getBlockCoords(); }, piece);
 
@@ -80,12 +80,13 @@ int main() {
                                     // gameover condition after every seal.
 
       while (window.pollEvent(ev)) {
-        handle_event(window, ev, piece, next_piece, start_piece_coords, offset,
-                     matrix, score, gameTick, clock);
+        handle_event(window, ev, piece, next_piece, saved_piece,
+                     start_piece_coords, offset, matrix, score, gameTick,
+                     clock);
       }
       window.clear();
-      draw_game(window, matrix, piece, next_piece, title, score_text,
-                score_number, score);
+      draw_game(window, matrix, piece, next_piece, saved_piece, title,
+                score_text, score_number, score);
       draw_gameover(window, gameover_text, restart_text);
       window.display();
 
@@ -102,8 +103,8 @@ int main() {
     // clang-format on
 
     while (window.pollEvent(ev)) {
-      handle_event(window, ev, piece, next_piece, start_piece_coords, offset,
-                   matrix, score, gameTick, clock);
+      handle_event(window, ev, piece, next_piece, saved_piece,
+                   start_piece_coords, offset, matrix, score, gameTick, clock);
     }
 
     handle_game_tick(matrix, piece, next_piece, start_piece_coords, offset,
@@ -122,7 +123,7 @@ int main() {
                          non_sealed::active);
 
     window.clear();
-    draw_game(window, matrix, piece, next_piece, title, score_text,
+    draw_game(window, matrix, piece, next_piece, saved_piece, title, score_text,
               score_number, score);
     window.display();
   }
