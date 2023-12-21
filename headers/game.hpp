@@ -24,15 +24,16 @@ void handle_key_presses(sf::Event &ev, TetrominoVariant &piece,
                         std::optional<TetrominoVariant> &saved_piece,
                         pieceCoords &start_piece, coords &offset,
                         matrixType &matrix, Score &score, sf::Time &gameTick,
-                        sf::Clock &clock);
+                        sf::Clock &clock, bool &save_lock);
 
 void handle_game_tick(matrixType &matrix, TetrominoVariant &piece,
                       TetrominoVariant &next_piece, pieceCoords &start_piece,
                       coords &offset, sf::Clock &clock, sf::Time &gameTick,
-                      Score &score);
+                      Score &score, bool &save_lock);
 
 void seal_piece(TetrominoVariant &piece, TetrominoVariant &next_piece,
-                pieceCoords &start_piece, coords &offset, matrixType &matrix);
+                pieceCoords &start_piece, coords &offset, matrixType &matrix,
+                bool &save_lock);
 
 void set_piece_non_sealed(pieceCoords &start_piece, coords &offset,
                           matrixType &matrix, cell_type type);
@@ -52,7 +53,8 @@ void handle_event(sf::RenderWindow &window, sf::Event &ev,
                   TetrominoVariant &piece, TetrominoVariant &next_piece,
                   std::optional<TetrominoVariant> &saved_piece,
                   pieceCoords &start_piece, coords &offset, matrixType &matrix,
-                  Score &score, sf::Time gameTick, sf::Clock clock);
+                  Score &score, sf::Time gameTick, sf::Clock clock,
+                  bool &save_lock);
 
 void draw_game(sf::RenderWindow &window, matrixType &matrix,
                TetrominoVariant &piece, TetrominoVariant &next_piece,

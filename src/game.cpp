@@ -159,7 +159,7 @@ void handle_key_presses(sf::Event &ev, TetrominoVariant &piece,
                         std::optional<TetrominoVariant> &saved_piece,
                         pieceCoords &start_piece, coords &offset,
                         matrixType &matrix, Score &score, sf::Time &gameTick,
-                        sf::Clock &clock) {
+                        sf::Clock &clock, bool &save_lock) {
   // Declaration here to prevent "jump bypasses variable initialisation" error
   bool valid_rotation = true;
   coords prev_offset;
@@ -189,7 +189,7 @@ void handle_key_presses(sf::Event &ev, TetrominoVariant &piece,
         score.drop();
       }
     } while (prev_offset != curr_offset);
-    seal_piece(piece, next_piece, start_piece, offset, matrix);
+    seal_piece(piece, next_piece, start_piece, offset, matrix, save_lock);
     break;
   case (sf::Keyboard::Q):
     std::visit([](auto &arg) { arg.rotate(); }, piece);
@@ -218,6 +218,10 @@ void handle_key_presses(sf::Event &ev, TetrominoVariant &piece,
     offset = std::make_tuple(COLUMNS / 2 - 2, 0);
     score.reset();
   case (sf::Keyboard::E):
+    if (save_lock) { // we can't save when save_lock is on.
+      break;
+    }
+    save_lock = true;
     if (saved_piece.has_value()) {
       auto temp = piece;
       piece = *saved_piece;
@@ -233,10 +237,7 @@ void handle_key_presses(sf::Event &ev, TetrominoVariant &piece,
     next_piece = assign_next_piece(piece);
     start_piece = std::visit(
         [](auto &arg) -> pieceCoords { return arg.getBlockCoords(); }, piece);
-    break;
     offset = std::make_tuple(COLUMNS / 2 - 2, 0);
-    break;
-
     break;
 
   default:
@@ -247,11 +248,11 @@ void handle_key_presses(sf::Event &ev, TetrominoVariant &piece,
 void handle_game_tick(matrixType &matrix, TetrominoVariant &piece,
                       TetrominoVariant &next_piece, pieceCoords &start_piece,
                       coords &offset, sf::Clock &clock, sf::Time &gameTick,
-                      Score &score) {
+                      Score &score, bool &save_lock) {
 
   if (clock.getElapsedTime() > gameTick) { // game tick
     if (shouldSeal(matrix, start_piece, offset)) {
-      seal_piece(piece, next_piece, start_piece, offset, matrix);
+      seal_piece(piece, next_piece, start_piece, offset, matrix, save_lock);
     }
     clock.restart(); // Reset the clock
     movePiece(matrix, start_piece, 'd', offset);
@@ -260,7 +261,8 @@ void handle_game_tick(matrixType &matrix, TetrominoVariant &piece,
 }
 
 void seal_piece(TetrominoVariant &piece, TetrominoVariant &next_piece,
-                pieceCoords &start_piece, coords &offset, matrixType &matrix) {
+                pieceCoords &start_piece, coords &offset, matrixType &matrix,
+                bool &save_lock) {
   auto piece_type = std::visit([](auto &arg) { return arg.piece_tag; }, piece);
   set_piece_non_sealed(start_piece, offset, matrix, piece_type);
   piece = next_piece;
@@ -268,6 +270,7 @@ void seal_piece(TetrominoVariant &piece, TetrominoVariant &next_piece,
   start_piece = std::visit(
       [](auto &arg) -> pieceCoords { return arg.getBlockCoords(); }, piece);
   offset = std::make_tuple(COLUMNS / 2 - 2, 0);
+  save_lock = false;
 }
 
 void set_piece_non_sealed(pieceCoords &start_piece, coords &offset,
@@ -366,13 +369,14 @@ void handle_event(sf::RenderWindow &window, sf::Event &ev,
                   TetrominoVariant &piece, TetrominoVariant &next_piece,
                   std::optional<TetrominoVariant> &saved_piece,
                   pieceCoords &start_piece, coords &offset, matrixType &matrix,
-                  Score &score, sf::Time gameTick, sf::Clock clock) {
+                  Score &score, sf::Time gameTick, sf::Clock clock,
+                  bool &save_lock) {
   if (ev.type == sf::Event::Closed) {
     window.close();
   }
   if (ev.type == sf::Event::KeyPressed) {
     handle_key_presses(ev, piece, next_piece, saved_piece, start_piece, offset,
-                       matrix, score, gameTick, clock);
+                       matrix, score, gameTick, clock, save_lock);
   }
 }
 

@@ -73,6 +73,8 @@ int main() {
   coords offset = std::make_tuple(COLUMNS / 2 - 2, 0); // (x, y)
   coords drop_offset = offset; // Initialize drop_position
 
+  bool save_lock = false;
+
   while (window.isOpen()) {
     sf::Event ev;
 
@@ -81,8 +83,8 @@ int main() {
 
       while (window.pollEvent(ev)) {
         handle_event(window, ev, piece, next_piece, saved_piece,
-                     start_piece_coords, offset, matrix, score, gameTick,
-                     clock);
+                     start_piece_coords, offset, matrix, score, gameTick, clock,
+                     save_lock);
       }
       window.clear();
       draw_game(window, matrix, piece, next_piece, saved_piece, title,
@@ -104,11 +106,12 @@ int main() {
 
     while (window.pollEvent(ev)) {
       handle_event(window, ev, piece, next_piece, saved_piece,
-                   start_piece_coords, offset, matrix, score, gameTick, clock);
+                   start_piece_coords, offset, matrix, score, gameTick, clock,
+                   save_lock);
     }
 
     handle_game_tick(matrix, piece, next_piece, start_piece_coords, offset,
-                     clock, gameTick, score);
+                     clock, gameTick, score, save_lock);
 
     int cleared = clear_rows(matrix);
     if (cleared > 0) {
