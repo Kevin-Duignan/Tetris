@@ -89,7 +89,7 @@ void draw_cells(sf::RenderWindow &window, matrixType &matrix,
 void draw_save_piece(sf::RenderWindow &window, TetrominoVariant &piece, float x,
                      float y) {
   // Draw the border
-  sf::RectangleShape border(sf::Vector2f(160, 200)); // Adjust size as needed
+  sf::RectangleShape border(sf::Vector2f(160, 110)); // Adjust size as needed
   border.setFillColor(sf::Color::White);             // Adjust color as needed
   border.setPosition(x - 5, y - 5); // Adjust position as needed
   window.draw(border);
@@ -105,7 +105,6 @@ void draw_save_piece(sf::RenderWindow &window, TetrominoVariant &piece, float x,
   float startX = x + background.getSize().x / 6;
   float startY = y + background.getSize().y / 7;
 
-  // Draw the piece
   sf::RectangleShape block(sf::Vector2f(CELL_SIZE, CELL_SIZE));
   auto piece_tag = std::visit([](auto &arg) { return arg.piece_tag; }, piece);
 
@@ -219,23 +218,25 @@ void handle_key_presses(sf::Event &ev, TetrominoVariant &piece,
     offset = std::make_tuple(COLUMNS / 2 - 2, 0);
     score.reset();
   case (sf::Keyboard::E):
-    if (!saved_piece) { // there is no saved piece
-      saved_piece = piece;
-      piece = next_piece;
-      next_piece = assign_next_piece(piece);
-      offset = std::make_tuple(COLUMNS / 2 - 2, 0);
-      break;
-    }
-    // if there is a saved piece:
     if (saved_piece.has_value()) {
+      auto temp = piece;
       piece = *saved_piece;
-      auto temp = saved_piece;
-      saved_piece = piece;
-      if (temp.has_value()) {
-        piece = temp.value();
-      }
+      saved_piece = temp;
+      offset = std::make_tuple(COLUMNS / 2 - 2, 0);
+      start_piece = std::visit(
+          [](auto &arg) -> pieceCoords { return arg.getBlockCoords(); }, piece);
       break;
     }
+    // if there is no saved piece:
+    saved_piece = piece;
+    piece = next_piece;
+    next_piece = assign_next_piece(piece);
+    start_piece = std::visit(
+        [](auto &arg) -> pieceCoords { return arg.getBlockCoords(); }, piece);
+    break;
+    offset = std::make_tuple(COLUMNS / 2 - 2, 0);
+    break;
+
     break;
 
   default:
@@ -382,7 +383,9 @@ void draw_game(sf::RenderWindow &window, matrixType &matrix,
   draw_board(window);
   draw_cells(window, matrix, piece);
   draw_next_piece(window, next_piece, WINDOW_X - 170, 200);
-  draw_save_piece(window, next_piece, WINDOW_X - 170, 300);
+  if (saved_piece.has_value()) {
+    draw_save_piece(window, *saved_piece, WINDOW_X - 170, 300);
+  }
   window.draw(title);
   window.draw(score_text);
   score_number.setString(std::to_string(score.get_total_score()));
