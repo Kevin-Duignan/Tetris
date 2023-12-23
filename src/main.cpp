@@ -112,7 +112,7 @@ int main() {
     }
 
     double tick_speed =
-        1.0 - (static_cast<double>(score.get_total_score()) / 1000);
+        1.0 - (static_cast<double>(score.get_total_score()) / 5000);
     gameTick = sf::seconds(std::clamp(tick_speed, 0.1, 0.7));
 
     handle_game_tick(matrix, piece, next_piece, start_piece_coords, offset,
