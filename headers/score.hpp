@@ -14,7 +14,7 @@ Destructor
 
 class Score {
 private:
-  uint64_t total_score;
+  std::uint64_t total_score;
   const int tick_score;
   const int drop_score;
   const int clear_score;
